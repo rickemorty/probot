@@ -1,97 +1,154 @@
-var app = {}
+var app = {
+    cart: { id: "", phone: "", name: "", email: "", cpf: "", total: 0, date: new Date(), address: "", delivery: "", payway: "", products: [], subscription: {} },
+    step: 1
+}
+
+// CART
+var cart = document.createElement("div");
+cart.className = "cart";
+cart.title = "Sacola";
+cart.innerHTML = `<i class="fa-solid fa-bag-shopping"></i>0`
+
+// CHAT
+var chat = document.createElement("div");
+chat.className = "chat";
+chat.list = []
+
+// BODY
+var html = document.createElement("div");
+html.className = "probot";
+
+// HEAD
+var head = document.createElement("div");
+head.className = "head";
+var logo = document.createElement("img");
+logo.className = "logo";
+var title = document.createElement("div");
+title.className = "title";
+
+var total = document.createElement("div");
+total.className = "total";
+total.update = () => total.innerHTML = `<label>Total <span>(R$)</span></label><br/>${money(app.cart.total)}`;
+
+// FOOTER
+var footer = document.createElement("div");
+footer.className = "footer";
+
+// CONTROLS
+var input = document.createElement("input");
+input.className = "input";
+input.id = "inputMessage"
+input.placeholder = "Mensagem";
+input.onkeyup = (e) => {
+    if (e.keyCode === 13) send.click()
+}
+
+var send = document.createElement("div");
+send.innerHTML = `<i class="fa fa-paper-plane" />`
+send.className = "send";
+send.title = "Enviar";
+send.onclick = () => {
+    chat.update({ user: true, msg: input.value })
+    if (app.bot[app.step].cb) app.bot[app.step].cb(input.value)
+    input.value = ""
+}
+
+var text = document.createElement("div");
+text.className = "text";
+text.append(input)
+text.append(send)
+
+var add = document.createElement("button")
+add.className = "button"
+add.innerHTML = `Continuar`
+
+
+var buttons = document.createElement("div")
+buttons.className = "buttons"
+buttons.update = (options, cb) => {
+    buttons.innerHTML = ""
+    options.map(option => {
+        let bt = document.createElement("button")
+        bt.className = "button"
+        bt.innerHTML = option.name
+        bt.onclick = () => { message(option.name, true); cb(option) }
+        buttons.append(bt)
+    })
+}
+
+// FUNCTIONS
+const money = (v) => parseFloat(v).toFixed(2);
+const show = (item) => setTimeout(() => item.className = item.className.replace("opacity", ""), 80)
+const message = (msg, user) => {
+    let i = chat.list.length
+    chat.list.push(document.createElement('div'))
+    chat.list[i].className = "msg opacity "
+    chat.list[i].className += user ? "right" : "left";
+    chat.list[i].innerHTML = msg
+    chat.append(chat.list[i])
+    chat.scrollTo(0, 10000);
+    show(chat.list[i])
+}
+const control = (e) => {
+    if (footer.contains(text))
+        footer.removeChild(text)
+    if (footer.contains(add))
+        footer.removeChild(add)
+    if (footer.contains(buttons))
+        footer.removeChild(buttons)
+    e.className += ' opacity'
+    footer.append(e)
+    show(e)
+    input.focus()
+}
+const next = () => chat.update(app.bot[++app.step])
+
+async function sw() {
+
+    if (Notification.permission === "granted") {
+        if ('serviceWorker' in navigator) {
+
+            const register = await navigator.serviceWorker.register('sw.js', { scope: '/' });
+
+            const broadcast = new BroadcastChannel('channel');
+            // ENVIAR MSG para SW =  
+            //broadcast.postMessage({ id: "123"});
+
+            /* broadcast.onmessage = async (data) => {
+                console.log(data);
+
+                if (data.make) {
+
+                }
+            } */
+
+            const publicVapidKey = 'BJ011p7GYL1alG6DAVkCoTuVPHfAGKD0l2sBq0HXfQ8zDOOAWXbgJC8lUJM7OuzsTjxszZlW5hFT0COV4NqcOdU';
+
+            const subscription = await register.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: publicVapidKey,
+            });
+
+            app.cart.subscription = subscription
+        }
+        else {
+            alert("A versão do seu navegador não é compatível, troque ou atualize seu navegador e tente novamente.")
+        }
+    } else {
+        alert('Permita as notificações para que possa receber atualizações sobre o seu pedido em tempo real.')
+        Notification.requestPermission()
+    }
+}
 
 function loadProbot() {
 
     // CSS
     document.head.innerHTML += `<style>:root { --main: ${app.theme};--green: #00FF7F;--text: #222;--border: #ddd;--background: #f1f1f1;--white: white;}</style><link rel="stylesheet" href="${app.css}" type="text/css"/><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`;
 
-    async function sw() {
-
-        if (Notification.permission === "granted") {
-            if ('serviceWorker' in navigator) {
-
-                const register = await navigator.serviceWorker.register('sw.js', { scope: '/' });
-
-                const broadcast = new BroadcastChannel('channel');
-                // ENVIAR MSG para SW =  
-                //broadcast.postMessage({ id: "123"});
-
-                /* broadcast.onmessage = async (data) => {
-                    console.log(data);
-    
-                    if (data.make) {
-    
-                    }
-                } */
-
-                const publicVapidKey = 'BJ011p7GYL1alG6DAVkCoTuVPHfAGKD0l2sBq0HXfQ8zDOOAWXbgJC8lUJM7OuzsTjxszZlW5hFT0COV4NqcOdU';
-
-                const subscription = await register.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: publicVapidKey,
-                });
-
-                app.cart.subscription = subscription
-            }
-            else {
-                alert("A versão do seu navegador não é compatível, troque ou atualize seu navegador e tente novamente.")
-            }
-        } else {
-            alert('Permita as notificações para que possa receber atualizações sobre o seu pedido em tempo real.')
-            Notification.requestPermission()
-        }
-    }
-
-    // FUNCTIONS
-    const next = () => chat.update(app.bot[++app.step])
-    const money = (v) => parseFloat(v).toFixed(2);
-    const show = (item) => setTimeout(() => item.className = item.className.replace("opacity", ""), 80)
-    const message = (msg, user) => {
-        let i = chat.list.length
-        chat.list.push(document.createElement('div'))
-        chat.list[i].className = "msg opacity "
-        chat.list[i].className += user ? "right" : "left";
-        chat.list[i].innerHTML = msg
-        chat.append(chat.list[i])
-        chat.scrollTo(0, 10000);
-        show(chat.list[i])
-    }
-    const control = (e) => {
-        if (footer.contains(text))
-            footer.removeChild(text)
-        if (footer.contains(add))
-            footer.removeChild(add)
-        if (footer.contains(buttons))
-            footer.removeChild(buttons)
-        e.className += ' opacity'
-        footer.append(e)
-        show(e)
-        input.focus()
-    }
-
-    // BODY
-    var html = document.createElement("div");
-    html.className = "foodbot";
-
-    // HEAD
-    var head = document.createElement("div");
-    head.className = "head";
-    var logo = document.createElement("img");
     logo.src = app.logo;
-    logo.className = "logo";
-    var title = document.createElement("div");
-    title.className = "title";
     title.innerHTML = app.restaurant
-
-    var total = document.createElement("div");
-    total.className = "total";
-    total.update = () => total.innerHTML = `<label>Total <span>(R$)</span></label><br/>${money(app.cart.total)}`;
     total.update()
-
-    var cart = document.createElement("div");
-    cart.className = "cart";
-    cart.title = "Sacola";
-    cart.innerHTML = `<i class="fa-solid fa-bag-shopping"></i>0`
+    add.onclick = app.bot[app.step].cb
     cart.update = (s, i, v) => {
         if (s, i, v) {
             if (app.cart.products.length)
@@ -135,11 +192,6 @@ function loadProbot() {
 
         chat.scrollTo(0, 10000);
     }
-
-    // CHAT
-    var chat = document.createElement("div");
-    chat.className = "chat";
-    chat.list = []
     chat.update = (item) => {
 
         if (typeof item.msg === 'string') item.msg = [item.msg]
@@ -181,52 +233,6 @@ function loadProbot() {
         control(text)
     }
 
-    // FOOTER
-    var footer = document.createElement("div");
-    footer.className = "footer";
-
-    // CONTROLS
-    var input = document.createElement("input");
-    input.className = "input";
-    input.id = "inputMessage"
-    input.placeholder = "Mensagem";
-    input.onkeyup = (e) => {
-        if (e.keyCode === 13) send.click()
-    }
-
-    var send = document.createElement("div");
-    send.innerHTML = `<i class="fa fa-paper-plane" />`
-    send.className = "send";
-    send.title = "Enviar";
-    send.onclick = () => {
-        chat.update({ user: true, msg: input.value })
-        if (app.bot[app.step].cb) app.bot[app.step].cb(input.value)
-        input.value = ""
-    }
-
-    var text = document.createElement("div");
-    text.className = "text";
-    text.append(input)
-    text.append(send)
-
-    var add = document.createElement("button")
-    add.className = "button"
-    add.innerHTML = `Continuar`
-    add.onclick = app.bot[app.step].cb
-
-    var buttons = document.createElement("div")
-    buttons.className = "buttons"
-    buttons.update = (options, cb) => {
-        buttons.innerHTML = ""
-        options.map(option => {
-            let bt = document.createElement("button")
-            bt.className = "button"
-            bt.innerHTML = option.name
-            bt.onclick = () => { message(option.name, true); cb(option) }
-            buttons.append(bt)
-        })
-    }
-
     // LAYOUT
     head.append(logo)
     head.append(title)
@@ -249,17 +255,20 @@ function probot(ID) {
     ws.onmessage = ({ data }) => {
 
         var sm = JSON.parse(data)
-        console.log(sm);
+
         if (sm.restaurant) {
-            app = sm
-            //loadProbot()
+            if (sm.api.pix)
+                sm.api.pix = eval(sm.api.pix)
+            sm.bot.map((m, i) => {
+                if (m.cb)
+                    sm.bot[i].cb = eval(sm.bot[i].cb)
+            })
+            app = { ...app, ...sm }
+            console.log(app);
+            loadProbot()
         }
     }
     ws.onopen = () => {
         ws.send(JSON.stringify({ id: ID }))
     }
-
-
 }
-
-export default probot
