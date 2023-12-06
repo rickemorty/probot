@@ -60,7 +60,7 @@ text.append(send)
 
 var add = document.createElement("button")
 add.className = "button"
-add.innerHTML = `Continuar`
+add.innerHTML = `<i class="fa fa-thumbs-up" />  Continuar`
 
 
 var buttons = document.createElement("div")
@@ -248,27 +248,31 @@ function loadProbot() {
     chat.update(app.bot[app.step])
 }
 
-function probot(ID) {
+var probot = (ID) => {
+
     const loader = document.createElement('div')
     loader.className = "loader"
-    const ws = new WebSocket('ws://localhost:3001')
+
+    const ws = new WebSocket('wss://probot.probox.app')
+    //const ws = new WebSocket('ws://localhost:8080')
     ws.onmessage = ({ data }) => {
 
         var sm = JSON.parse(data)
+        console.log(sm);
 
-        if (sm.restaurant) {
-            if (sm.api.pix)
-                sm.api.pix = eval(sm.api.pix)
+        if (sm.client) {
+            if (sm.api.pix) sm.api.pix = eval(sm.api.pix)
             sm.bot.map((m, i) => {
-                if (m.cb)
-                    sm.bot[i].cb = eval(sm.bot[i].cb)
+                if (m.cb) sm.bot[i].cb = eval(sm.bot[i].cb)
             })
+            app.cart.client = sm.client
             app = { ...app, ...sm }
-            console.log(app);
             loadProbot()
         }
     }
+
     ws.onopen = () => {
+        app.id = ID
         ws.send(JSON.stringify({ id: ID }))
     }
 }
