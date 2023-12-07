@@ -17,6 +17,10 @@ chat.list = []
 // BODY
 var html = document.createElement("div");
 html.className = "probot";
+const loader = document.createElement('div')
+loader.className = "loader"
+html.append(loader)
+document.body.append(html)
 
 // HEAD
 var head = document.createElement("div");
@@ -246,19 +250,15 @@ function loadProbot() {
     head.append(total)
     head.append(cart)
 
+    html.innerHTML = ''
     html.append(head)
     html.append(chat)
-
     html.append(footer)
 
-    document.body.appendChild(html)
     chat.update(app.bot[app.step])
 }
 
 var probot = (ID) => {
-
-    const loader = document.createElement('div')
-    loader.className = "loader"
 
     const ws = new WebSocket('wss://probot.probox.app')
     //const ws = new WebSocket('ws://localhost:8080')

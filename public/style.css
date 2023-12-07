@@ -1,12 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-.loader{
-    position: fixed;
-    top: 0;
-    left:0;
-    background:var(--background);
-}
-
 .probot {
     font-family: 'Roboto', sans-serif;
     width: 100%;
@@ -141,7 +134,8 @@
     border: 2px solid var(--border);
     border-bottom: 5px solid var(--border);
 }
-.probot .opacity{
+
+.probot .opacity {
     opacity: 0;
 }
 
@@ -368,4 +362,67 @@
 .probot .button img {
     margin-bottom: 5px;
     margin-right: 8px;
+}
+
+.probot .loader {
+    width: 40px;
+    height: 20px;
+    background: var(--main);
+    position: relative;
+    animation: l19-0 1.5s infinite linear;
+    margin: auto;
+    margin-top: 15%;
+}
+
+.probot .loader:before,
+.probot .loader:after {
+    content: "";
+    position: absolute;
+    background: inherit;
+    bottom: 100%;
+    width: 50%;
+    height: 100%;
+    animation: inherit;
+    animation-name: l19-1;
+}
+
+.probot .loader:before {
+    left: 0;
+    --s: -1, 1;
+}
+
+.probot .loader:after {
+    right: 0;
+}
+
+@keyframes l19-0 {
+    0%, 30% {
+        transform: translateY(0) scaleY(1)
+    }
+
+    49.99% {
+        transform: translateY(-50%) scaleY(1)
+    }
+
+    50% {
+        transform: translateY(-50%) scaleY(-1)
+    }
+
+    70%, 100% {
+        transform: translateY(-100%) scaleY(-1)
+    }
+}
+
+@keyframes l19-1 {
+    0%, 10%, 90%, 100% {
+        transform: scale(var(--s, 1)) translate(0)
+    }
+
+    30%, 70% {
+        transform: scale(var(--s, 1)) translate(20px)
+    }
+
+    50% {
+        transform: scale(var(--s, 1)) translate(20px, 20px)
+    }
 }
