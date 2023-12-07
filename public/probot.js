@@ -62,7 +62,6 @@ var add = document.createElement("button")
 add.className = "button"
 add.innerHTML = `<i class="fa fa-thumbs-up" />  Continuar`
 
-
 var buttons = document.createElement("div")
 buttons.className = "buttons"
 buttons.update = (options, cb) => {
@@ -71,7 +70,11 @@ buttons.update = (options, cb) => {
         let bt = document.createElement("button")
         bt.className = "button"
         bt.innerHTML = option.name
-        bt.onclick = () => { message(option.name, true); cb(option) }
+        bt.onclick = async () => {
+            bt.disabled = true; message(option.name, true);
+            if (app.bot[app.step].cb) await app.bot[app.step].cb(option);
+            bt.disabled = false;
+        }
         buttons.append(bt)
     })
 }
@@ -101,7 +104,11 @@ const control = (e) => {
     show(e)
     input.focus()
 }
-const next = () => chat.update(app.bot[++app.step])
+const next = () => { if (app.bot[++app.step]) chat.update(app.bot[app.step]) }
+const restart = () => {
+    app.step = 1
+    chat.update(app.bot[app.step])
+}
 
 async function sw() {
 
@@ -260,7 +267,7 @@ var probot = (ID) => {
         var sm = JSON.parse(data)
         console.log(sm);
 
-        if (sm.client) {
+        if (sm.restaurant) {
             if (sm.api.pix) sm.api.pix = eval(sm.api.pix)
             sm.bot.map((m, i) => {
                 if (m.cb) sm.bot[i].cb = eval(sm.bot[i].cb)
@@ -268,6 +275,10 @@ var probot = (ID) => {
             app.cart.client = sm.client
             app = { ...app, ...sm }
             loadProbot()
+        }
+
+        if (sm.pay) {
+            message(`<i class="fa fa-check" /> PAGAMENTO CONFIRMADO.`); next()
         }
     }
 
