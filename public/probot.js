@@ -252,7 +252,7 @@ function loadProbot() {
     head.append(title)
     head.append(total)
     head.append(cart)
-
+    loader.style.opacity = 0
     html.innerHTML = ''
     html.append(head)
     html.append(chat)
