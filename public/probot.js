@@ -3,6 +3,9 @@ var app = {
     step: 1
 }
 
+//LOADER CSS
+document.head.innerHTML += `<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rickemorty/probot/public/loader.css" type="text/css" />`
+
 // CART
 var cart = document.createElement("div");
 cart.className = "cart";
