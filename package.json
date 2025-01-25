@@ -1,16 +1,15 @@
 {
-  "name": "probot",
-  "version": "0.1.0",
+  "name": "shopbot",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "dependencies": {
-    "react": "^18",
-    "react-dom": "^18",
-    "next": "14.0.3"
+  "devDependencies": {
+    "sass": "^1.83.4",
+    "vite": "^6.0.5"
   }
 }
