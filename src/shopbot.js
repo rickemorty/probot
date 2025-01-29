@@ -1,10 +1,22 @@
 import './style.sass'
 
+function UID(length = 24) {
+    let chars = "abcdef0123456789";
+    let r = "";
+
+    while (length > 0) {
+        r += chars.charAt(Math.floor(Math.random() * chars.length));
+        length--;
+    }
+    return r;
+}
+
 let C = localStorage.getItem('probox')
 if (!C) {
-    C = Math.floor(Date.now() / 1000).toString(16)
+    C = UID()
     localStorage.setItem('probox', C)
 }
+
 var app = { step: 1, client: C }
 
 const z = ({ d, id, c, t, ck, h, p }) => {
@@ -52,7 +64,7 @@ var input = z({ d: "textarea", id: "inputMessage", c: "input", p: "Mensagem" })
 var bsend = z({
     c: "send", h: `<i class="fa fa-paper-plane" />`, t: "Enviar",
     ck: () => {
-        chat.update({ user: true, msg: input.value })
+        chat.update({ u: C, m: input.value })
         if (app.bot[app.step].cb) app.bot[app.step].cb(input.value)
         input.value = ""
     }
@@ -71,7 +83,7 @@ buttons.update = (options, cb) => {
         let bt = z({
             c: "button", h: option.name, ck: async () => {
                 bt.disabled = true;
-                message(option.name, true);
+                message(option.name, C);
                 if (cb) await cb(option);
                 bt.disabled = false;
             }
@@ -82,21 +94,17 @@ buttons.update = (options, cb) => {
 
 // FUNCTIONS
 const money = (v) => parseFloat(v).toFixed(2);
-const show = (item) => setTimeout(() => item.className = item.className.replace("opacity", ""), 80)
+
 const message = (msg, user) => {
-    let i = chat.list.length
-    chat.list.push(z({ h: msg, c: `msg opacity ${user ? "right" : "left"}` }))
-    chat.append(chat.list[i])
+    chat.h(`<div class="msg ${user == C ? 'right' : 'left'}"><b class="n">${user && user == C ? 'Você' : app.name}</b><br>${msg}</div>`, true)
     chat.scrollTo(0, 10000);
-    show(chat.list[i])
 }
+
 const control = (e) => {
     if (footer.contains(text)) footer.removeChild(text)
     if (footer.contains(add)) footer.removeChild(add)
     if (footer.contains(buttons)) footer.removeChild(buttons)
-    e.className += ' opacity'
     footer.append(e)
-    show(e)
     input.focus()
 }
 
@@ -113,7 +121,7 @@ function load(ID) {
 
     logo.src = app.avatar;
     avatar.h(`<i class="fa fa-chevron-down" title="FECHAR"></i> <b>Oi</b> <img src="${app.avatar}" />`).src = app.avatar;
-    title.h(app.name)
+    title.h(app.title)
     add.onclick = app.bot[app.step].cb
 
     if (app.cart) {
@@ -141,37 +149,35 @@ function load(ID) {
             if (app.cart.total > 0) message("Estes são os itens em sua sacola.")
             else message("Sua sacola está vazia.")
             chat.append(carts)
-            show(carts)
             chat.scrollTo(0, 10000);
         }
     }
     window.probox = { update: cart.update }
-    chat.update = (item) => {
+    chat.update = (msg) => {
 
-        if (item.msg) {
-            if (typeof item.msg === 'string') item.msg = [item.msg]
-            item.msg.map(msg => message(msg, item.user || false))
+        if (msg.m) {
+            if (typeof msg.m === 'string') msg.m = [msg.m]
+            msg.m.map(n => message(n, n.u))
         }
 
-        if (item.type == "products") {
+        if (msg.type == "products") {
             let products = z({ c: "products opacity" })
-            item.options.map((p, i) => products.append(z({ c: "product", h: P(p, i) })))
+            msg.options.map((p, i) => products.append(z({ c: "product", h: P(p, i) })))
             control(add)
             chat.append(products)
-            show(products)
             chat.scrollTo(0, 10000);
             return
         }
 
-        if (item.type == "buttons") {
-            buttons.update(item.options, item.cb)
+        if (msg.type == "buttons") {
+            buttons.update(msg.options, msg.cb)
             control(buttons)
             chat.scrollTo(0, 10000);
             return
         }
 
         input.pattern = ""
-        if (item.pattern) input.pattern = item.pattern
+        if (msg.pattern) input.pattern = msg.pattern
         control(text)
     }
 
@@ -190,13 +196,13 @@ function load(ID) {
 }
 
 var ws;
-var shopbot = (ID, a) => {
+var shopbot = ({ key, mount = false }) => {
     //const ws = new WebSocket('wss://probot.probox.app')
     ws = new WebSocket('ws://localhost:8080')
 
     const send = (d) => {
         if (ws.readyState == WebSocket.CLOSED) {
-            shopbot(ID, a)
+            shopbot(key, mount)
             setTimeout(() => send(d), 2000)
             return
         }
@@ -209,16 +215,16 @@ var shopbot = (ID, a) => {
             if (m.api && m.api.pix) m.api.pix = eval(m.api.pix)
             m.bot.map((s, i) => s.cb && (m.bot[i].cb = eval(s.cb)))
             app = { ...app, ...m }
-            load(a)
+            load(mount)
         }
-        if (m.m) chat.update({ msg: m.m })
+        if (m.m) chat.update(m)
 
         if (m.pay) message(`<i class="fa fa-check" /> PAGAMENTO CONFIRMADO.`);
     }
 
     ws.onopen = () => {
         if (!app.bot) {
-            app.id = ID
+            app.id = key
             send({ start: true })
         }
     }
@@ -226,7 +232,7 @@ var shopbot = (ID, a) => {
     /* ws.onclose = () => send({ bye: true }) */
 }
 
-shopbot('655f7beb24009e22a413bd6e', '#app')
+shopbot({ key: '653e6e903710a07f431c4ede', mount: '#app' })
 
 async function sw() {
 
