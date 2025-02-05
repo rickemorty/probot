@@ -1,5 +1,6 @@
 import './style.sass'
 
+
 function UID(length = 24) {
     let chars = "abcdef0123456789";
     let r = "";
@@ -17,6 +18,7 @@ if (!C) {
     localStorage.setItem('probox', C)
 }
 
+var register = 0
 var app = { step: 1, client: C }
 
 const z = ({ d, id, c, t, ck, h, p }) => {
@@ -64,7 +66,8 @@ var input = z({ d: "textarea", id: "inputMessage", c: "input", p: "Mensagem" })
 var bsend = z({
     c: "send", h: `<i class="fa fa-paper-plane" />`, t: "Enviar",
     ck: () => {
-        chat.update({ u: C, m: input.value })
+        if (!register) register++
+        chat.update({ n: C, m: input.value })
         if (app.bot[app.step].cb) app.bot[app.step].cb(input.value)
         input.value = ""
     }
@@ -96,7 +99,7 @@ buttons.update = (options, cb) => {
 const money = (v) => parseFloat(v).toFixed(2);
 
 const message = (msg, user) => {
-    chat.h(`<div class="msg ${user == C ? 'right' : 'left'}"><b class="n">${user && user == C ? 'Você' : app.name}</b><br>${msg}</div>`, true)
+    chat.h(`<div class="msg ${user && user == C ? 'right' : 'left'}"><b class="n">${!user ? app.name : (user == C ? 'Você' : user)}</b><br>${msg}</div>`, true)
     chat.scrollTo(0, 10000);
 }
 
@@ -157,7 +160,7 @@ function load(ID) {
 
         if (msg.m) {
             if (typeof msg.m === 'string') msg.m = [msg.m]
-            msg.m.map(n => message(n, n.u))
+            msg.m.map(mg => message(mg, msg.n))
         }
 
         if (msg.type == "products") {
@@ -206,6 +209,7 @@ var shopbot = ({ key, mount = false }) => {
             setTimeout(() => send(d), 2000)
             return
         }
+        if (register == 1) { d.register = true; register++ }
         ws.send(JSON.stringify({ id: app.id, client: app.client, ...d }))
     }
     ws.onmessage = ({ data }) => {
@@ -234,6 +238,7 @@ var shopbot = ({ key, mount = false }) => {
 
 shopbot({ key: '653e6e903710a07f431c4ede', mount: '#app' })
 
+/* 
 async function sw() {
 
     if (Notification.permission === "granted") {
@@ -245,13 +250,13 @@ async function sw() {
             // ENVIAR MSG para SW =  
             //broadcast.postMessage({ id: "123"});
 
-            /* broadcast.onmessage = async (data) => {
+            broadcast.onmessage = async (data) => {
                 console.log(data);
 
                 if (data.make) {
 
                 }
-            } */
+            } 
 
             const publicVapidKey = 'BJ011p7GYL1alG6DAVkCoTuVPHfAGKD0l2sBq0HXfQ8zDOOAWXbgJC8lUJM7OuzsTjxszZlW5hFT0COV4NqcOdU';
 
@@ -269,4 +274,4 @@ async function sw() {
         alert('Permita as notificações para que possa receber atualizações sobre o seu pedido em tempo real.')
         Notification.requestPermission()
     }
-}
+} */
