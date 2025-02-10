@@ -1,26 +1,5 @@
 import './style.sass'
 
-
-function UID(length = 24) {
-    let chars = "abcdef0123456789";
-    let r = "";
-
-    while (length > 0) {
-        r += chars.charAt(Math.floor(Math.random() * chars.length));
-        length--;
-    }
-    return r;
-}
-
-let C = localStorage.getItem('probox')
-if (!C) {
-    C = UID()
-    localStorage.setItem('probox', C)
-}
-
-var register = 0
-var app = { step: 1, client: C }
-
 const z = ({ d, id, c, t, ck, h, p }) => {
     let e = document.createElement(d || "div")
     if (id) e.id = id
@@ -37,11 +16,33 @@ const z = ({ d, id, c, t, ck, h, p }) => {
     return e
 }
 
-const P = (p, i) => `<input onchange="probox.update(${p.s || app.step},${i},event.target.value)" class="qtd" type="number" min="0" max="99" value="${p.qtd}" />
-                    <img src="${p.pic}" alt="${p.name}" />
-                    <div class="name">${p.name}</div>
-                    <div class="desc">${p.desc}</div>
-                    <div class="price"><span>R$</span> ${money(p.price)}</div>`
+function UID(length = 24) {
+    let chars = "abcdef0123456789";
+    let r = "";
+    while (length > 0) {
+        r += chars.charAt(Math.floor(Math.random() * chars.length));
+        length--;
+    }
+    return r;
+}
+
+let C = localStorage.getItem('probox')
+if (!C) {
+    C = UID()
+    localStorage.setItem('probox', C)
+}
+
+var register = 0
+var app = { step: 0, client: C }
+
+const P = (p, i) => `
+<img src="${p.pic[0].src}" alt="${p.name}" />
+<div class="name">${p.name}</div>
+<div class="desc">${p.desc}</div>
+<div class="add">
+<div class="price"><span>R$</span><br>${money(p.price)}</div>
+<input onchange="probox.update(${p.s || app.step},${i},event.target.value)" class="qtd" type="number" min="0" max="99" value="${p.qtd || 0}" />
+</div>`
 
 // BODY
 var html = z({ c: "shopbot" });
@@ -113,7 +114,7 @@ const control = (e) => {
 
 const next = () => { if (app.bot[++app.step]) chat.update(app.bot[app.step]) }
 const restart = () => {
-    app.step = 1
+    app.step = 0
     chat.update(app.bot[app.step])
 }
 
@@ -147,7 +148,7 @@ function load(ID) {
             cart.h(`<i class="fa-solid fa-bag-shopping"></i><b>${items}</b>`);
         }
         cart.onclick = () => {
-            let carts = z({ c: "products opacity" });
+            let carts = z({ c: "products" });
             app.cart.products.map(p => carts.append(z({ c: "product", h: P(p, p.i) })))
             if (app.cart.total > 0) message("Estes são os itens em sua sacola.")
             else message("Sua sacola está vazia.")
@@ -164,7 +165,8 @@ function load(ID) {
         }
 
         if (msg.type == "products") {
-            let products = z({ c: "products opacity" })
+            console.log(msg.options);
+            let products = z({ c: "products" })
             msg.options.map((p, i) => products.append(z({ c: "product", h: P(p, i) })))
             control(add)
             chat.append(products)
@@ -236,7 +238,8 @@ var shopbot = ({ key, mount = false }) => {
     /* ws.onclose = () => send({ bye: true }) */
 }
 
-shopbot({ key: '653e6e903710a07f431c4ede', mount: '#app' })
+/* shopbot({ key: '653e6e903710a07f431c4ede', mount: '#app' }) brunnocruvinel */
+shopbot({ key: '655f7beb24009e22a413bd6e', mount: '#app' })
 
 /* 
 async function sw() {
