@@ -1,3 +1,4 @@
+
 const z = ({ d, id, c, t, ck, h, p }) => {
     let e = document.createElement(d || "div")
     if (id) e.id = id
@@ -24,9 +25,9 @@ function UID(length = 24) {
     return r;
 }
 
-let probox = localStorage.getItem('probox')
-if (!probox) window.app = { client: UID(), step: 0 }
-else window.app = JSON.parse(probox)
+let local = localStorage.getItem('probox')
+if (!local) window.app = { client: UID(), step: 0 }
+else window.app = JSON.parse(local)
 
 const P = (p, i) => `<img src="${p.pic[0].src}" alt="${p.name}" />
 <div class="name">${p.name}</div>
@@ -37,8 +38,9 @@ const P = (p, i) => `<img src="${p.pic[0].src}" alt="${p.name}" />
 </div>`
 
 // BODY
+var loader = z({ c: 'load', h: '<div class="inner" />' })
 var html = z({ c: "shopbot" })
-html.style.display = "none";
+/* html.style.display = "none"; */
 // HEAD
 var head = z({ c: "head" })
 var logo = z({ d: "img", c: "logo" })
@@ -115,7 +117,7 @@ const restart = () => {
 function load(ID) {
 
     // CSS
-    document.head.innerHTML += `<style>:root {${app.style}}</style><link rel="stylesheet" href="${app.css || 'src/style.sass'}" type="text/css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`;
+    document.head.innerHTML += `<style>:root {${app.style}}</style>`;
 
     logo.src = app.avatar;
     avatar.h(`<i class="fa fa-chevron-down" title="FECHAR"></i> <b>Oi</b> <img src="${app.avatar}" />`).src = app.avatar;
@@ -191,6 +193,7 @@ function load(ID) {
     head.append(title)
     head.append(full)
     if (app.cart) head.append(cart)
+    html.innerHTML = ""
     html.append(head)
     html.append(chat)
     html.append(footer)
@@ -206,13 +209,19 @@ function load(ID) {
 }
 
 var ws;
-var shopbot = ({ key, mount = false, open }) => {
-    //const ws = new WebSocket('wss://probot.probox.app')
-    ws = new WebSocket('ws://localhost:8080')
+var probox = ({ key, mount = false, open, dev }) => {
+    let css = dev ? "src/style.sass" : "https://probox.app/shopbot/probox.css"
+    document.head.innerHTML += `<link rel="stylesheet" href="${css}" type="text/css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`
+    const ws = new WebSocket('wss://ws.probox.app')
+    //const ws = new WebSocket('ws://localhost:3001')
+    if (open) html.classList.add('open', 'full')
+    html.append(loader)
+    if (mount) document.querySelector(mount).append(html)
+    else document.body.append(html)
 
     const send = (d) => {
         if (ws.readyState == WebSocket.CLOSED) {
-            shopbot(key, mount)
+            window.probox({ key: key, mount: mount, open: open })
             setTimeout(() => send(d), 2000)
             return
         }
@@ -220,7 +229,7 @@ var shopbot = ({ key, mount = false, open }) => {
     }
     ws.onmessage = ({ data }) => {
         var m = JSON.parse(data)
-        console.log(m);
+        /*   console.log(m); */
         if (m.bot) {
             m.bot.map((s, i) => s.cb && (m.bot[i].cb = eval(s.cb)))
             app = { ...app, ...m }
@@ -235,47 +244,7 @@ var shopbot = ({ key, mount = false, open }) => {
         app.id = key
         send({ start: true })
     }
-    if (open) html.classList.add('open', 'full')
+
     /* ws.onclose = () => send({ bye: true }) */
 }
-
-/* shopbot({ key: '653e6e903710a07f431c4ede', mount: '#app' }) brunnocruvinel */
-shopbot({ key: '655f5b7224009e22a413bbfa-b', open: true })
-
-/* 
-async function sw() {
-
-    if (Notification.permission === "granted") {
-        if ('serviceWorker' in navigator) {
-
-            const register = await navigator.serviceWorker.register('sw.js', { scope: '/' });
-
-            const broadcast = new BroadcastChannel('channel');
-            // ENVIAR MSG para SW =  
-            //broadcast.postMessage({ id: "123"});
-
-            broadcast.onmessage = async (data) => {
-                console.log(data);
-
-                if (data.make) {
-
-                }
-            } 
-
-            const publicVapidKey = 'BJ011p7GYL1alG6DAVkCoTuVPHfAGKD0l2sBq0HXfQ8zDOOAWXbgJC8lUJM7OuzsTjxszZlW5hFT0COV4NqcOdU';
-
-            const subscription = await register.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: publicVapidKey,
-            });
-
-            app.cart.subscription = subscription
-        }
-        else {
-            alert("A versão do seu navegador não é compatível, troque ou atualize seu navegador e tente novamente.")
-        }
-    } else {
-        alert('Permita as notificações para que possa receber atualizações sobre o seu pedido em tempo real.')
-        Notification.requestPermission()
-    }
-} */
+//probox({ key: "655f5b7224009e22a413bbfa-b", open: true, dev: true })
