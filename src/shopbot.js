@@ -1,5 +1,3 @@
-import './style.sass'
-
 const z = ({ d, id, c, t, ck, h, p }) => {
     let e = document.createElement(d || "div")
     if (id) e.id = id
@@ -26,27 +24,21 @@ function UID(length = 24) {
     return r;
 }
 
-let C = localStorage.getItem('probox')
-if (!C) {
-    C = UID()
-    localStorage.setItem('probox', C)
-}
+let probox = localStorage.getItem('probox')
+if (!probox) window.app = { client: UID(), step: 0 }
+else window.app = JSON.parse(probox)
 
-var register = 0
-var app = { step: 0, client: C }
-
-const P = (p, i) => `
-<img src="${p.pic[0].src}" alt="${p.name}" />
+const P = (p, i) => `<img src="${p.pic[0].src}" alt="${p.name}" />
 <div class="name">${p.name}</div>
 <div class="desc">${p.desc}</div>
 <div class="add">
 <div class="price"><span>R$</span><br>${money(p.price)}</div>
-<input onchange="probox.update(${p.s || app.step},${i},event.target.value)" class="qtd" type="number" min="0" max="99" value="${p.qtd || 0}" />
+<input onchange='update(${JSON.stringify(p)},event.target.value)' class="qtd" type="number" min="0" max="99" value="${p.qtd || 0}" />
 </div>`
 
 // BODY
-var html = z({ c: "shopbot" });
-
+var html = z({ c: "shopbot" })
+html.style.display = "none";
 // HEAD
 var head = z({ c: "head" })
 var logo = z({ d: "img", c: "logo" })
@@ -67,9 +59,9 @@ var input = z({ d: "textarea", id: "inputMessage", c: "input", p: "Mensagem" })
 var bsend = z({
     c: "send", h: `<i class="fa fa-paper-plane" />`, t: "Enviar",
     ck: () => {
-        if (!register) register++
-        chat.update({ n: C, m: input.value })
-        if (app.bot[app.step].cb) app.bot[app.step].cb(input.value)
+        let m = input.value
+        chat.update({ n: app.client, m: m })
+        if (app.bot[app.step].cb) app.bot[app.step].cb(m)
         input.value = ""
     }
 })
@@ -87,7 +79,7 @@ buttons.update = (options, cb) => {
         let bt = z({
             c: "button", h: option.name, ck: async () => {
                 bt.disabled = true;
-                message(option.name, C);
+                message(option.name, app.client);
                 if (cb) await cb(option);
                 bt.disabled = false;
             }
@@ -100,8 +92,10 @@ buttons.update = (options, cb) => {
 const money = (v) => parseFloat(v).toFixed(2);
 
 const message = (msg, user) => {
-    chat.h(`<div class="msg ${user && user == C ? 'right' : 'left'}"><b class="n">${!user ? app.name : (user == C ? 'Você' : user)}</b><br>${msg}</div>`, true)
+    console.log(msg);
+    chat.h(`<div class="msg ${user && user == app.client ? 'right' : 'left'}"><b class="n">${!user ? app.name : (user == app.client ? 'Você' : user)}</b><br>${msg.replace(/\n/g, '<br/>')}</div>`, true)
     chat.scrollTo(0, 10000);
+    input.value = ""
 }
 
 const control = (e) => {
@@ -121,7 +115,7 @@ const restart = () => {
 function load(ID) {
 
     // CSS
-    document.head.innerHTML += `<style>:root { --main:#00f0ff;--green:#00FF7F;--text:#222;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71}</style>${app.css ? `<link rel="stylesheet" href="${app.css}" type="text/css"/>` : ''}<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`;
+    document.head.innerHTML += `<style>:root {${app.style}}</style><link rel="stylesheet" href="${app.css || 'src/style.sass'}" type="text/css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`;
 
     logo.src = app.avatar;
     avatar.h(`<i class="fa fa-chevron-down" title="FECHAR"></i> <b>Oi</b> <img src="${app.avatar}" />`).src = app.avatar;
@@ -129,34 +123,39 @@ function load(ID) {
     add.onclick = app.bot[app.step].cb
 
     if (app.cart) {
-        cart.update = (s, i, v) => {
-            if (s, i, v) {
-                if (app.cart.products.length)
-                    app.cart.products = app.cart.products.filter(p => p.name != app.bot[s].options[i].name)
-                app.bot[s].options[i].qtd = parseInt(v)
-                app.bot[s].options[i].i = i
-                app.bot[s].options[i].s = s
-                app.cart.products.push(app.bot[s].options[i])
+        cart.update = (p, v) => {
+
+            if (app.cart.products.length)
+                app.cart.products = app.cart.products.filter(pr => pr.name != p.name)
+            if (v > 0) {
+                p.qtd = parseInt(v)
+                app.cart.products.push(p)
             }
             app.cart.total = 0
             let items = 0
             app.cart.products.map(o => {
-                app.cart.total += o.qtd * o.price
+                app.cart.total += o.qtd * parseFloat(o.price)
                 items = items + o.qtd
             })
 
             cart.h(`<i class="fa-solid fa-bag-shopping"></i><b>${items}</b>`);
         }
+
         cart.onclick = () => {
             let carts = z({ c: "products" });
             app.cart.products.map(p => carts.append(z({ c: "product", h: P(p, p.i) })))
             if (app.cart.total > 0) message("Estes são os itens em sua sacola.")
             else message("Sua sacola está vazia.")
             chat.append(carts)
+            if (app.cart.total > 0) {
+                if (app.cart.delivery)
+                    message(`<b>Taxa de entrega:</b> R$ ${app.cart.delivery.toFixed(2)}`)
+                message(`<b>Total:</b> R$ ${(parseFloat(app.cart.delivery) + parseFloat(app.cart.total)).toFixed(2)}`)
+            }
             chat.scrollTo(0, 10000);
         }
+        window.update = cart.update
     }
-    window.probox = { update: cart.update }
     chat.update = (msg) => {
 
         if (msg.m) {
@@ -184,6 +183,7 @@ function load(ID) {
         input.pattern = ""
         if (msg.pattern) input.pattern = msg.pattern
         control(text)
+        //localStorage.setItem('chat', chat.innerHTML)
     }
 
     // LAYOUT
@@ -197,11 +197,16 @@ function load(ID) {
     html.append(avatar)
     if (ID) document.querySelector(ID).append(html)
     else document.body.append(html)
+
+    chat.innerHTML = localStorage.getItem('chat')
     chat.update(app.bot[app.step])
+
+    html.style.display = 'flex'
+
 }
 
 var ws;
-var shopbot = ({ key, mount = false }) => {
+var shopbot = ({ key, mount = false, open }) => {
     //const ws = new WebSocket('wss://probot.probox.app')
     ws = new WebSocket('ws://localhost:8080')
 
@@ -211,14 +216,12 @@ var shopbot = ({ key, mount = false }) => {
             setTimeout(() => send(d), 2000)
             return
         }
-        if (register == 1) { d.register = true; register++ }
         ws.send(JSON.stringify({ id: app.id, client: app.client, ...d }))
     }
     ws.onmessage = ({ data }) => {
         var m = JSON.parse(data)
         console.log(m);
         if (m.bot) {
-            if (m.api && m.api.pix) m.api.pix = eval(m.api.pix)
             m.bot.map((s, i) => s.cb && (m.bot[i].cb = eval(s.cb)))
             app = { ...app, ...m }
             load(mount)
@@ -229,17 +232,15 @@ var shopbot = ({ key, mount = false }) => {
     }
 
     ws.onopen = () => {
-        if (!app.bot) {
-            app.id = key
-            send({ start: true })
-        }
+        app.id = key
+        send({ start: true })
     }
-
+    if (open) html.classList.add('open', 'full')
     /* ws.onclose = () => send({ bye: true }) */
 }
 
 /* shopbot({ key: '653e6e903710a07f431c4ede', mount: '#app' }) brunnocruvinel */
-shopbot({ key: '655f7beb24009e22a413bd6e', mount: '#app' })
+shopbot({ key: '655f5b7224009e22a413bbfa-b', open: true })
 
 /* 
 async function sw() {
