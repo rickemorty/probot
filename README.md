@@ -1,5 +1,6 @@
 # chat
 
+Fazer pattern background chat
 banners
 slide de fotos
 clicar na foto ampliar
