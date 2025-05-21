@@ -27,7 +27,7 @@ function UID(length = 24) {
 
 let local = localStorage.getItem('probox')
 if (!local) window.app = {
-    client: UID(), step: 0, name: 'Celia', title: 'Celia', avatar: 'https://probox.app/probox.svg', style: '--main:rgb(141, 0, 252);--green:#00FF7F;--text:#222;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71',
+    client: UID(), step: 0, name: 'Claudia', title: 'Claudia', avatar: 'https://probox.app/probox.svg', style: '--main:rgb(141, 0, 252);--green:#00FF7F;--text:#222;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71',
     bot: [{ m: ['Olá, seja bem vindo(a) à <b>Probox</b>.<br />Sua assistente virtual de neǵocios desenvolvida utilizando Inteligência Artificial.', 'Qual é o nome da sua <b>Assistente</b>?'], cb: (m) => { app.id = m.trim().toLowerCase(); ws.send(JSON.stringify({ id: app.id, start: true, client: app.client })) } }]
 }
 else window.app = JSON.parse(local)
@@ -96,9 +96,10 @@ buttons.update = (options, cb) => {
 
 // FUNCTIONS
 const money = (v) => parseFloat(v).toFixed(2);
+const tp = (m) => m.replace(/\n/g, '<br/>').replace('%nome', app.nome || '')
 
 const message = (msg, user) => {
-    chat.h(`<div class="msg ${user && user == app.client ? 'right' : 'left'}"><div class="n">${!user ? app.name : (user == app.client ? 'Você' : user)}</div>${msg.replace(/\n/g, '<br/>')}</div>`, true)
+    chat.h(`<div class="msg ${user && user == app.client ? 'right' : 'left'}"><div class="n">${!user ? app.name : (user == app.client ? 'Você' : user)}</div>${tp(msg)}</div>`, true)
     chat.scrollTo(0, 10000);
     input.value = ""
 }
@@ -116,6 +117,7 @@ const restart = () => {
     app.step = 0
     chat.update(app.bot[app.step])
 }
+
 chat.update = (msg) => {
 
     if (msg.m) {
@@ -231,22 +233,25 @@ var probox = ({ key, mount = false, open, dev }) => {
 
     ws.onmessage = ({ data }) => {
         var m = JSON.parse(data)
-        /*   console.log(m); */
+        console.log(m);
         write.classList.remove('h')
         bsend.classList.add('h')
-
+        head.classList.add('talk')
         setTimeout(() => {
-
             if (m.bot) {
                 m.bot.map((s, i) => s.cb && (m.bot[i].cb = eval(s.cb)))
                 app = { ...app, ...m }
                 load(mount)
             }
             if (m.m) chat.update(m)
+            if (m.u) app = { ...app, ...m.u }
+            if (m.n) next()
+            if (m.s > -1) (app.step = m.s, chat.update(app.bot[app.step]))
 
             if (m.pay) message(`<i class="fa fa-check" /> PAGAMENTO CONFIRMADO.`);
             write.classList.add('h')
             bsend.classList.remove('h')
+            head.classList.remove('talk')
         }, 1000)
     }
 
