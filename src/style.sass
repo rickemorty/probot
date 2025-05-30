@@ -46,11 +46,15 @@ $g: 1440px
         height: 100%
         .avatar
             display: none
+        .chat
+            padding: 20px 16%
+            @media (max-width: $s)
+                padding: 20px 6%
         .footer
             width: 80%
             margin: auto
             border-radius: 10px
-            margin-bottom: 20px
+            margin-bottom: 16px
             padding: 6px 10px
             @media (max-width: $s)
                 width: 90%
@@ -67,7 +71,7 @@ $g: 1440px
             background-size: 400% 400%
             animation: talk 2.8s ease infinite
         .logo
-            width: 54px
+            width: 50px
         .title
             flex: 1
             padding-left: 10px
@@ -111,7 +115,7 @@ $g: 1440px
         flex-direction: column
         .msg
             min-width: 40%
-            padding: 8px 12px
+            padding: 10px 14px
             border-radius: 8px
             margin: 0 10px
             margin-top: 8px
@@ -133,10 +137,25 @@ $g: 1440px
                 color: var(--main)
         .right
             background: var(--main)
+            color: var(--right)
             opacity: .8
             color: white
             border-left: 3px solid var(--border)
             align-self: flex-end
+        .form
+            input
+                width: 92%
+                border: none
+                padding: 12px 2%
+                margin: 6px
+                border-bottom: 2px solid #888
+                &:focus
+                    border-bottom: 3px solid var(--main)
+                &[type='checkbox']
+                    width: 16px
+                    height: 16px
+                    margin: 0
+                    margin-left: 12px
         .products
             display: flex
             flex-direction: row
@@ -306,7 +325,6 @@ $g: 1440px
     .write
         width: 48px
         height: 48px
-        /* display: inline-block */
         position: relative
         margin: 10px 16px
         &::after, &::before
@@ -314,7 +332,7 @@ $g: 1440px
             box-sizing: border-box
             width: 48px
             height: 48px
-            border-radius: 18px
+            border-radius: 50%
             border: 4px solid var(--main)
             position: absolute
             left: 0

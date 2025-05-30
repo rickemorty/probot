@@ -1,8 +1,11 @@
 
-const z = ({ d, id, c, t, ck, h, p }) => {
+const z = ({ d, id, c, t, ck, h, p, n, v, tt }) => {
     let e = document.createElement(d || "div")
     if (id) e.id = id
-    if (t) e.title = t
+    if (tt) e.title = tt
+    if (t) e.type = t
+    if (n) e.name = n
+    if (v) e.value = v
     if (ck) e.onclick = ck
     if (c) e.className = c
     if (h) e.innerHTML = h
@@ -25,13 +28,16 @@ function UID(length = 24) {
     return r;
 }
 
-let local = localStorage.getItem('probox')
+/* let local = localStorage.getItem('probox')
 if (!local) window.app = {
-    client: UID(), step: 0, name: 'Claudia', title: 'Claudia', avatar: 'https://probox.app/probox.svg', style: '--main:rgb(141, 0, 252);--green:#00FF7F;--text:#222;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71',
+    client: UID(), step: 0, name: 'Claudia', title: 'Claudia', avatar: 'https://probox.app/probox.svg', style: '--main:rgb(141, 0, 252);--green:#00FF7F;--text:#222;#right:white;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71',
     bot: [{ m: ['Olá, seja bem vindo(a) à <b>Probox</b>.<br />Sua assistente virtual de neǵocios desenvolvida utilizando Inteligência Artificial.', 'Qual é o nome da sua <b>Assistente</b>?'], cb: (m) => { app.id = m.trim().toLowerCase(); ws.send(JSON.stringify({ id: app.id, start: true, client: app.client })) } }]
 }
-else window.app = JSON.parse(local)
-
+else window.app = JSON.parse(local) */
+window.app = {
+    client: UID(), step: 0, name: 'Claudia', title: 'Claudia', avatar: 'https://probox.app/probox.svg', style: '--main:rgb(141, 0, 252);--green:#00FF7F;--text:#222;#right:white;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71',
+    bot: [{ m: ['Olá, seja bem vindo(a) à <b>Probox</b>.<br />Sua assistente de neǵocios com <b>Inteligência Artificial</b>.', 'Qual é o nome da sua <b>Assistente</b>?'], cb: (m) => { app.id = m.trim().toLowerCase(); ws.send(JSON.stringify({ id: app.id, start: true, client: app.client })) } }]
+}
 const P = (p, i) => `<img src="${p.pic[0].src}" alt="${p.name}" />
 <div class="name">${p.name}</div>
 <div class="desc">${p.desc}</div>
@@ -48,28 +54,28 @@ var html = z({ c: "shopbot" })
 var head = z({ c: "head" })
 var logo = z({ d: "img", c: "logo" })
 var title = z({ c: "title" })
-var full = z({ d: 'i', c: 'fullicon fa-solid fa-times', t: 'TELA CHEIA', ck: () => html.classList.contains('full') ? (html.classList.remove('full'), full.classList.remove('fa-times'), full.classList.add('fa-up-right-and-down-left-from-center')) : (html.classList.add('full'), full.classList.add('fa-times'), full.classList.remove('fa-up-right-and-down-left-from-center')) })
+var full = z({ d: 'i', c: 'fullicon fa-solid fa-times', tt: 'TELA CHEIA', ck: () => html.classList.contains('full') ? (html.classList.remove('full'), full.classList.remove('fa-times'), full.classList.add('fa-up-right-and-down-left-from-center')) : (html.classList.add('full'), full.classList.add('fa-times'), full.classList.remove('fa-up-right-and-down-left-from-center')) })
 // CART
-var cart = z({ c: 'cart', t: "Sacola", h: `<i class="fa-solid fa-bag-shopping"></i><b>0</b>` });
+var cart = z({ c: 'cart', tt: "Sacola", h: `<i class="fa-solid fa-bag-shopping"></i><b>0</b>` });
 // CHAT
-var chat = z({ c: "chat", h: '<div class="write" />' });
+var chat = z({ c: "chat" });
 chat.list = []
 // FOOTER
 var footer = z({ c: "footer" })
 var avatar = z({ c: "avatar", ck: () => (html.classList.contains('open') ? document.querySelector('.shopbot').classList.remove('open') : document.querySelector('.shopbot').classList.add('open'), document.querySelector('.shopbot').classList.remove('full')) })
 // CONTROLS
 var input = z({ d: "textarea", id: "inputMessage", c: "input", p: "Mensagem" })
-/* input.onkeyup = (e) => e.keyCode === 13 ? send.click() : false */
 
 var bsend = z({
-    c: "send", h: `<i class="fa fa-paper-plane" />`, t: "Enviar",
+    c: "send", h: `<i class="fa fa-paper-plane" />`, tt: "Enviar",
     ck: () => {
         let m = input.value
-        chat.update({ n: app.client, m: m })
+        chat.update({ n: app.client, m: app.bot[app.step].hide ? '******' : m })
         if (app.bot[app.step].cb) app.bot[app.step].cb(m)
         input.value = ""
     }
 })
+input.onkeydown = (e) => { e.keyCode === 13 ? (e.preventDefault(), bsend.click()) : false }
 var write = z({ c: 'write h' })
 var text = z({ c: "text" })
 text.append(input)
@@ -96,7 +102,7 @@ buttons.update = (options, cb) => {
 
 // FUNCTIONS
 const money = (v) => parseFloat(v).toFixed(2);
-const tp = (m) => m.replace(/\n/g, '<br/>').replace('%nome', app.nome || '')
+const tp = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>').replace('%nome', app.nome || '') : m.outerHTML
 
 const message = (msg, user) => {
     chat.h(`<div class="msg ${user && user == app.client ? 'right' : 'left'}"><div class="n">${!user ? app.name : (user == app.client ? 'Você' : user)}</div>${tp(msg)}</div>`, true)
@@ -118,33 +124,47 @@ const restart = () => {
     chat.update(app.bot[app.step])
 }
 
-chat.update = (msg) => {
+const Fields = (fields) => {
+    let r = ''
+    fields.map(f => {
+        if (f.f) f = eval(f.f)(f)
+        if ('text' == f.t) r += z({ d: 'input', p: f.n, ...f }).outerHTML
+        if ('checkbox' == f.t) r += `<div style="padding:18px 6px"><b>${f.n}: </b>${f.o.map(o => z({ d: 'input', ...f }).outerHTML + ' ' + o)}</div>`
+    })
+    return r
+}
 
-    if (msg.m) {
-        if (typeof msg.m === 'string') msg.m = [msg.m]
-        msg.m.map(mg => message(mg, msg.n))
+const Form = (form, id = '') => message(z({ c: 'form ' + id, h: Fields(form) }))
+
+chat.update = ({ id, m, form, list, product, button, cb, n }) => {
+
+    if (m) {
+        if (typeof m === 'string') m = [m]
+        m.map(msg => message(msg, n))
+        control(text)
     }
 
-    if (msg.type == "products") {
-        console.log(msg.options);
-        let products = z({ c: "products" })
-        msg.options.map((p, i) => products.append(z({ c: "product", h: P(p, i) })))
+    if (form) {
+        Form(form, id)
+        add.onclick = app.bot[app.step].cb
         control(add)
+    }
+
+    if (list) list.map(item => Form(item))
+
+    if (product) {
+        var products = z({ c: "products" })
+        product.map((p, i) => products.append(z({ c: "product", h: P(p, i) })))
         chat.append(products)
-        chat.scrollTo(0, 10000);
-        return
+        control(add)
     }
 
-    if (msg.type == "buttons") {
-        buttons.update(msg.options, msg.cb)
-        control(buttons)
-        chat.scrollTo(0, 10000);
-        return
-    }
+    if (button) control(buttons.update(button, cb))
 
-    input.pattern = ""
-    if (msg.pattern) input.pattern = msg.pattern
-    control(text)
+    chat.scrollTo(0, 10000);
+
+    //input.pattern = ""
+    //if (msg.pattern) input.pattern = msg.pattern
     //localStorage.setItem('chat', chat.innerHTML)
 }
 
@@ -155,7 +175,7 @@ function load(ID) {
     avatar.h(`<i class="fa fa-chevron-down" title="FECHAR"></i> <b>Oi</b> <img src="${app.avatar}" />`).src = app.avatar;
     if (app.title) title.h(app.title)
     console.log(app);
-    add.onclick = app.bot[app.step].cb
+    /* add.onclick = app.bot[app.step].cb */
 
     if (app.cart) {
         cart.update = (p, v) => {
@@ -205,7 +225,7 @@ function load(ID) {
     if (ID) document.querySelector(ID).append(html)
     else document.body.append(html)
 
-    chat.innerHTML = localStorage.getItem('chat')
+    //chat.innerHTML = localStorage.getItem('chat')
     chat.update(app.bot[app.step])
 
     html.style.display = 'flex'
@@ -245,9 +265,7 @@ var probox = ({ key, mount = false, open, dev }) => {
             }
             if (m.m) chat.update(m)
             if (m.u) app = { ...app, ...m.u }
-            if (m.n) next()
             if (m.s > -1) (app.step = m.s, chat.update(app.bot[app.step]))
-
             if (m.pay) message(`<i class="fa fa-check" /> PAGAMENTO CONFIRMADO.`);
             write.classList.add('h')
             bsend.classList.remove('h')
