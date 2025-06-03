@@ -247,7 +247,7 @@ var probox = ({ key, mount = false, dev }) => {
 
     const send = (d) => {
         if (ws.readyState == WebSocket.CLOSED) {
-            window.probox({ key: key, mount: mount, full: full })
+            window.probox({ key: key, mount: mount })
             setTimeout(() => send(d), 2000)
             return
         }
