@@ -48,13 +48,13 @@ const P = (p, i) => `<img src="${p.pic[0].src}" alt="${p.name}" />
 
 // BODY
 var loader = z({ c: 'load', h: '<div class="inner" />' })
-var html = z({ c: "shopbot" })
+var html = z({ c: "Assistente" })
 /* html.style.display = "none"; */
 // HEAD
 var head = z({ c: "head" })
 var logo = z({ d: "img", c: "logo" })
 var title = z({ c: "title" })
-var full = z({ d: 'i', c: 'fullicon fa-solid fa-times', tt: 'TELA CHEIA', ck: () => html.classList.contains('full') ? (html.classList.remove('full'), full.classList.remove('fa-times'), full.classList.add('fa-up-right-and-down-left-from-center')) : (html.classList.add('full'), full.classList.add('fa-times'), full.classList.remove('fa-up-right-and-down-left-from-center')) })
+var full = z({ d: 'i', c: 'fullicon fa-solid fa-up-right-and-down-left-from-center', tt: 'TELA CHEIA', ck: () => html.classList.contains('full') ? (html.classList.remove('full'), full.classList.remove('fa-times'), full.classList.add('fa-up-right-and-down-left-from-center')) : (html.classList.add('full'), full.classList.add('fa-times'), full.classList.remove('fa-up-right-and-down-left-from-center')) })
 // CART
 var cart = z({ c: 'cart', tt: "Sacola", h: `<i class="fa-solid fa-bag-shopping"></i><b>0</b>` });
 // CHAT
@@ -62,7 +62,7 @@ var chat = z({ c: "chat" });
 chat.list = []
 // FOOTER
 var footer = z({ c: "footer" })
-var avatar = z({ c: "avatar", ck: () => (html.classList.contains('open') ? document.querySelector('.shopbot').classList.remove('open') : document.querySelector('.shopbot').classList.add('open'), document.querySelector('.shopbot').classList.remove('full')) })
+var avatar = z({ c: "avatar", ck: () => html.classList.contains('open') ? (html.classList.add('hide'),html.classList.remove('open')) : (html.classList.add('open'), html.classList.remove('hide')) })
 // CONTROLS
 var input = z({ d: "textarea", id: "inputMessage", c: "input", p: "Mensagem" })
 
@@ -221,30 +221,33 @@ function load(ID) {
     html.append(head)
     html.append(chat)
     html.append(footer)
-    html.append(avatar)
-    if (ID) document.querySelector(ID).append(html)
-    else document.body.append(html)
+
+    if (ID) {
+        document.querySelector(ID).append(html)
+    }
+    else {
+        html.append(avatar);
+        document.body.append(html)
+    }
 
     //chat.innerHTML = localStorage.getItem('chat')
     chat.update(app.bot[app.step])
-
     html.style.display = 'flex'
 }
 
 var ws;
-var probox = ({ key, mount = false, open, dev }) => {
-    let css = dev ? "src/style.sass" : "https://probox.app/shopbot/probox.css"
-    document.head.innerHTML += `<link rel="stylesheet" href="${css}" type="text/css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`
-    //ws = new WebSocket('wss://ws.probox.app')
-    ws = new WebSocket('ws://localhost:3000')
-    if (open) html.classList.add('open', 'full')
+var probox = ({ key, mount = false, dev }) => {
     html.append(loader)
-    if (mount) document.querySelector(mount).append(html)
-    else document.body.append(html)
+    let css = dev ? "src/style.sass" : "https://probox.app/assistente/probox.css"
+    document.head.innerHTML += `<link rel="stylesheet" href="${css}" type="text/css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css" integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w==" crossOrigin="anonymous" referrerPolicy="no-referrer" />`
+    ws = dev ? new WebSocket('ws://localhost:3000') : new WebSocket('wss://ws.probox.app')
+
+    if (mount) { document.querySelector(mount).append(html) }
+    else {html.classList.add('open');document.body.append(html) }
 
     const send = (d) => {
         if (ws.readyState == WebSocket.CLOSED) {
-            window.probox({ key: key, mount: mount, open: open })
+            window.probox({ key: key, mount: mount, full: full })
             setTimeout(() => send(d), 2000)
             return
         }
@@ -283,6 +286,3 @@ var probox = ({ key, mount = false, open, dev }) => {
 
     /* ws.onclose = () => send({ bye: true }) */
 }
-//probox({ key: "67d04921a77725eb124ee2bf-b", open: true, dev: true })
-//probox({ key: "655f5b7224009e22a413bbfa", dev: true })
-probox({ dev: true, open: true })

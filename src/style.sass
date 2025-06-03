@@ -3,32 +3,39 @@ $p: rgb(141, 0, 252)
 $s: 768px
 $m: 992px
 $g: 1440px
-.shopbot
+#app
+    background: black
+    width: 270px
+    height: 500px
+.Assistente
+    background: var(--background)
     font-family: 'Roboto', sans-serif
     color: var(--text)
-    position: fixed
-    right: 30px
-    bottom: 86px
     border-radius: 6px
     overflow: hidden
     display: flex
     flex-direction: column
     animation: fadein .8s
+    height: 100%
     *
         transition: all 250ms ease-out
     *:focus
         outline: none
-    .head, .chat, .footer, .total, .cart
-        display: none
     .h
         display: none
+    .head, .footer, .chat, .total, .cart
+        display: flex
+    &.hide
+        .head, .chat, .footer, .total, .cart
+            display: none
     &.open
+        position: fixed
+        right: 30px
+        bottom: 86px
         width: 333px
         height: 444px
         background: var(--background)
         box-shadow: -2px 3px 10px #bbb
-        .head, .footer, .chat, .total, .cart
-            display: flex
         .avatar
             background: var(--main)
             border-radius: 100%
@@ -40,6 +47,7 @@ $g: 1440px
             img,b
                 display: none
     &.full
+        position: fixed
         left: 0
         top: 0
         width: 100%
@@ -58,6 +66,9 @@ $g: 1440px
             padding: 6px 10px
             @media (max-width: $s)
                 width: 90%
+            .text textarea
+                max-width: 100%
+                flex: 1
             .send
                 margin-left: 13px
     .head
@@ -109,7 +120,6 @@ $g: 1440px
     .chat
         padding: 20px 0
         flex: 1
-        background: var(--background)
         overflow-x: hidden
         overflow-y: auto
         flex-direction: column
@@ -217,29 +227,29 @@ $g: 1440px
                     font-size: 13px
     .footer
         border-bottom: 3px solid #eee
-        &::before
-            background: url(https://probox.app/img/cloud.png)
+        /* &::before
+            background: url(https://probox.app/img/cloud.png) no-repeat
             position: absolute
             content: ' '
             width: 102%
-            height: 200px
+            height: 100px
             left: 0
             margin-left: -2%
             z-index: -1
-            opacity: .8
+            opacity: .8 */
         .text
+            width: 94%
             display: flex
-            flex: 1
             flex-direction: row
             align-items: center
-            padding: 6px
+            padding: 6px 2%
             justify-content: space-between
         .input
             background: var(--white)
             padding: 17px 20px
             border-radius: 12px
+            width: 90%
             border: none
-            flex: 1
             font-size: 16px
             color: var(--text)
             font-weight: bold
