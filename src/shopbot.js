@@ -38,11 +38,11 @@ window.app = {
     client: UID(), step: 0, name: 'Claudia', title: 'Claudia', avatar: 'https://probox.app/probox.svg', style: '--main:rgb(141, 0, 252);--green:#00FF7F;--text:#222;#right:white;--border:#ddd;--background:#f1f1f1;--white:white;--yellow:#f5ec71',
     bot: [{ m: ['Olá, seja bem vindo(a) à <b>Probox</b>.<br />Sua assistente de neǵocios com <b>Inteligência Artificial</b>.', 'Qual é o nome da sua <b>Assistente</b>?'], cb: (m) => { app.id = m.trim().toLowerCase(); ws.send(JSON.stringify({ id: app.id, start: true, client: app.client })) } }]
 }
-const P = (p, i) => `<img src="${p.pic[0].src}" alt="${p.name}" />
-<div class="name">${p.name}</div>
+const P = (p, i) => `<img src="${p.fotos[0].src}" alt="${p.name}" />
+<div class="name">${p.nome}</div>
 <div class="desc">${p.desc}</div>
 <div class="add">
-<div class="price"><span>R$</span><br>${money(p.price)}</div>
+<div class="price"><span>R$</span><br>${money(p.preco)}</div>
 <input onchange='update(${JSON.stringify(p)},event.target.value)' class="qtd" type="number" min="0" max="99" value="${p.qtd || 0}" />
 </div>`
 
@@ -62,7 +62,7 @@ var chat = z({ c: "chat" });
 chat.list = []
 // FOOTER
 var footer = z({ c: "footer" })
-var avatar = z({ c: "avatar", ck: () => html.classList.contains('open') ? (html.classList.add('hide'),html.classList.remove('open')) : (html.classList.add('open'), html.classList.remove('hide')) })
+var avatar = z({ c: "avatar", ck: () => html.classList.contains('open') ? (html.classList.add('hide'), html.classList.remove('open')) : (html.classList.add('open'), html.classList.remove('hide')) })
 // CONTROLS
 var input = z({ d: "textarea", id: "inputMessage", c: "input", p: "Mensagem" })
 
@@ -136,7 +136,7 @@ const Fields = (fields) => {
 
 const Form = (form, id = '') => message(z({ c: 'form ' + id, h: Fields(form) }))
 
-chat.update = ({ id, m, form, list, product, button, cb, n }) => {
+chat.update = ({ id, m, form, list, products, button, cb, n }) => {
 
     if (m) {
         if (typeof m === 'string') m = [m]
@@ -152,10 +152,11 @@ chat.update = ({ id, m, form, list, product, button, cb, n }) => {
 
     if (list) list.map(item => Form(item))
 
-    if (product) {
-        var products = z({ c: "products" })
-        product.map((p, i) => products.append(z({ c: "product", h: P(p, i) })))
-        chat.append(products)
+    if (products) {
+        var ps = z({ c: "products" })
+        products.map((p, i) => ps.append(z({ c: "product", h: P(p, i) })))
+        chat.append(ps)
+        add.onclick = app.bot[app.step].cb
         control(add)
     }
 
@@ -215,7 +216,7 @@ function load(ID) {
     // LAYOUT
     head.append(logo)
     head.append(title)
-    head.append(full)
+    // head.append(full)
     if (app.cart) head.append(cart)
     html.innerHTML = ""
     html.append(head)
@@ -232,7 +233,6 @@ function load(ID) {
 
     //chat.innerHTML = localStorage.getItem('chat')
     chat.update(app.bot[app.step])
-    html.style.display = 'flex'
 }
 
 var ws;
@@ -243,7 +243,7 @@ var probox = ({ key, mount = false, dev }) => {
     ws = dev ? new WebSocket('ws://localhost:3000') : new WebSocket('wss://ws.probox.app')
 
     if (mount) { document.querySelector(mount).append(html) }
-    else {html.classList.add('open');document.body.append(html) }
+    else { html.classList.add('open'); document.body.append(html) }
 
     const send = (d) => {
         if (ws.readyState == WebSocket.CLOSED) {

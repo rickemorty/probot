@@ -1,18 +1,21 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ShopBot - Probox</title>
-  </head>
-  <body>
-    <div id="app"></div>
-    <script type="module" src="main.js"></script>
-    <script type="text/javascript" src="/src/shopbot.js"></script>
-    <script>//probox({ key: "67d04921a77725eb124ee2bf-b", open: true, dev: true })
-//probox({ key: "655f5b7224009e22a413bbfa", dev: true })
-probox({ mount: '#app' })
-</script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ShopBot - Probox</title>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script type="module" src="main.js"></script>
+  <script type="text/javascript" src="/src/shopbot.js"></script>
+  <script>//probox({ key: "67d04921a77725eb124ee2bf-b", open: true, dev: true })
+    //probox({ key: "655f5b7224009e22a413bbfa", dev: true })
+    probox({ key: "655f5b7224009e22a413bbfa", mount: '#app', dev: true })
+  </script>
+</body>
+
 </html>

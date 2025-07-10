@@ -1,12 +1,15 @@
 # chat
 
-Fazer responsivo,
+Fazer assistente padrao, claudia
+probox.app/cliente
+
+## ARGUMENTOS ##
+Problemas Whatsapp
+Falha de entendimento, perda de clientes, perda de numero, erro no pedido, gastos a mais fica caro.
+Tirar print umbler
+Whatsapp da muito problema, do nada ele bani o seu numero e voce perde tudo. Você tem que estar dentro das politicas sociais da empresa deles. Sua conta é avaliada, não há garantias.Não tem suporte. Te da maior dor de cabeça.
 
 # 2 cenarios
-
-snipet (comportamento normal) fazer classe snipet para o .Assistente
-mount (não tem avatar)
-
 Fazer pattern background chat
 banners
 slide de fotos
