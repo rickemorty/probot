@@ -1,16 +1,8 @@
 <script setup>
-import { reactive, provide, ref } from 'vue'
+import { reactive, provide, ref, onMounted } from 'vue'
 import Head from './Head.vue'
 import Chat from './Chat.vue'
-import Footer from './Footer.vue'
-
-const bot = () => {
-  let scripts = document.getElementsByTagName('script');
-  let last = scripts[scripts.length - 1];
-  let url = last.src;
-  let p = new URLSearchParams(url)
-  return p.get('id')
-}
+import Footer from './footer.vue'
 
 function UID(length = 24) {
   let chars = "abcdef0123456789";
@@ -25,7 +17,7 @@ function UID(length = 24) {
 if (!localStorage.getItem('probox')) localStorage.setItem('probox', UID())
 const ID = localStorage.getItem('probox')
 var chat = ref([])
-var app = ref({ id: bot(), client: ID, step: 0, talk: false, input: '', nome: 'Probox', avatar: "https://probox.app/img/logow.svg", sacola: { produtos: [] } })
+var app = ref({ id: document.getElementById('probox').src.split('id=')[1], client: ID, step: 0, talk: false, input: '', nome: 'Probox', avatar: "https://probox.app/img/logow.svg", sacola: { produtos: [] } })
 var ws = reactive({});
 var load = ref(true)
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
@@ -49,7 +41,7 @@ const go = (s = false) => {
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
   ws.onclose = () => setTimeout(WS(), Math.floor(3000 + Math.random() * 7000))
-  ws.onopen = () => send({ e: 'load' })
+  ws.onopen = async () => send({ e: 'load' })
   ws.onerror = (e) => console.error(e);
   ws.onmessage = ({ data }) => {
     load.value = false
@@ -70,9 +62,8 @@ function WS() {
 
   }
 }
-WS()
-
 provide('shopbot', { app, send, chat, update })
+WS()
 
 </script>
 

@@ -23,7 +23,7 @@ function save() {
 <template lang="pug">
 .Footer
     .inputs.row.ac
-        .select(v-if="app.input.select")
+        .select.bw(v-if="app.input.select")
             .o(v-for="{o,e} in app.input.select" @click="e") {{o}}
 
         template(v-if="!app.input")
@@ -43,8 +43,13 @@ function save() {
         border: none
         width: 100%
         padding: 10px
+        border-radius: 12px
+        border-left: 4px solid var(--main)
+        border-bottom: 5px solid var(--main)
         .o
-            padding: 10px
+            padding: 20px 10px
+            border-top: 1px solid #ccc
+            color: black
     textarea
         background: white
         padding: 14px
