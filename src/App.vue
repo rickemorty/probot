@@ -2,7 +2,7 @@
 import { reactive, provide, ref, onMounted } from 'vue'
 import Head from './Head.vue'
 import Chat from './Chat.vue'
-import Footer from './footer.vue'
+import Footer from './Footer.vue'
 
 function UID(length = 24) {
   let chars = "abcdef0123456789";
@@ -23,7 +23,7 @@ var load = ref(true)
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
 
 const update = (msg) => {
-  var { id, m=false, form, list, products, button, cb, n } = msg
+  var { id, m = false, form, list, products, button, cb, n } = msg
   if (m) {
     if (typeof m === 'string') m = [m]
     m.map((msg, i) => setTimeout(() => chat.value.push({ m: msg }), i * 222))
@@ -57,6 +57,7 @@ function WS() {
         app.value = { ...app.value, ...m }
       }
       if (m.s > -1) (app.value.step = m.s, update(app.value.bot[m.s]))
+      if (m.n) app.value.input = m
       app.value.talk = false
     }, 1000)
 
@@ -96,6 +97,25 @@ body
     border: none
     cursor: pointer
     background: none
+  input
+    border: none
+    padding: 12px 10px
+    border-bottom: 2px solid #ccc
+    margin-top: 2px
+    margin-bottom: 20px
+    &:focus
+      background: rgba($gr,.2)
+      border-bottom: 1px solid $gr
+    &:hover
+      border-top-right-radius: 10px
+      border-bottom-left-radius: 10px
+      border-left: 2px solid var(--main)
+      border-bottom: 2px solid var(--main)
+  label
+    color: var(--main)
+    font-size: 14px
+  input:focus, textarea:focus
+    outline: none
   .container
     height: 100%
   .row
@@ -125,6 +145,8 @@ body
       justify-content: flex-end
   .tc
     text-align: center
+  .tu
+    text-transform: uppercase
   .mt
       margin-top: 10px
   .fb
