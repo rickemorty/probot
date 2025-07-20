@@ -1,65 +1,70 @@
 <script setup>
+import Produto from './comp/Produto.vue'
 import { inject, ref } from 'vue'
-var { app, chat, send } = inject('shopbot')
-// import  from '@/comp/.vue'
+var { app, chat, send, scroll, update } = inject('shopbot')
 var msg = ref("")
-var select = ref()
-function text(e, v) {
+
+function txt(e, v) {
     e.preventDefault();
     let m = msg.value
-    if (app.value.bot[app.value.step].hide) m = '******'
+    if (app.value.input.h) m = '******'
     chat.value.push({ user: app.value.client, m: m })
-    if (app.value.bot[app.value.step].cb)
-        setTimeout(() => (app.value.bot[app.value.step].cb(msg.value), msg.value = ''), 200)
-
+    scroll()
+    if (app.value.input.cb)
+        setTimeout(() => (app.value.input.cb(msg.value), msg.value = ''), 200)
+    else msg.value = ''
 }
 
 function save() {
 
 }
 
+function option({ e, o }) {
+    app.value.input = {};
+    chat.value.push({ user: app.value.client, m: o })
+    if (e) {
+        if (e == 'produto') app.value.input.produto = true
+        else send({ e: e })
+    }
+}
 </script>
 
-<template lang="pug">
+<template lang="pug" scoped>
 .Footer
-    .inputs.row.ac
-        .form.su.border.bw(v-if="app.input.form")
-            .n.row.ac
-                i.fa(:class="app.input.i")
-                b {{app.input.n}}
-            .campo.col(v-for="c in app.input.form")
-                label {{c.n}}
-                input(v-if="c.t=='t'" :placeholder="c.n")
-                input(v-if="c.t=='n'" type="number" :placeholder="c.n")
-        .select.su.border.bw(v-if="app.input.select")
-            .o.pt.fb(v-for="{o,e} in app.input.select" @click="app.input = {};send({e:e})") {{o}}
-        template(v-if="!app.input")
-            textarea.su(v-model="msg" @keydown.enter="text" placeholder="Mensagem")
+    .inputs
+        //Form(v-if="app.input.form") 
+        Produto(v-if="app.input.produto" :e="true") 
+        .select.in.sh.border.bw(v-if="app.input.select" :class="app.talk && 'out'")
+            .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
+        .txt.in.row.ac.sh(v-if="!app.input.select && !app.input.produto")
+            textarea(v-model="msg" @keydown.enter="txt" placeholder="Mensagem")
             //button.short.fa.fa-floppy-disk(@click="save" title="SALVAR")
-            button.send.fa.fa-paper-plane(@click="text" title="ENVIAR")
+            button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
     .probox.tc.fb
         a(href="https://probox.app" target="_blank") © PROBOX
-
 </template>
 
 <style lang="sass" scoped>
+$g: #00FF7F
+$p: #8d00fc
 .Footer
     .inputs
         padding: 0 5%
-    .form
-        border-radius: 12px
+    .txt
         background: white
-        padding: 18px 16px
-        width: 100%
-        .n
-            font-size: 30px
-            padding-bottom: 15px
-            color: #666
-            i
-                margin-right: 8px
-        .campo
-            label
-                text-transform: capitalize
+        border-left: 3px solid #ccc
+        border-bottom: 3px solid #ccc
+        border-radius: 12px
+        padding: 14px
+        &:focus-within
+            border-left: 4px solid var(--main)
+            border-bottom: 5px solid var(--main)
+    textarea
+        width: 86%
+        border: none
+        font-size: 16px
+        color: var(--text)
+        font-weight: bold        
     .border
         border-left: 2px solid var(--main)
         border-bottom: 4px solid var(--main)
@@ -73,21 +78,7 @@ function save() {
             text-transform: uppercase
             color: #555
             &:hover
-                background: rgba(#00FF7F,.6)
-    textarea
-        background: white
-        padding: 14px
-        border-radius: 12px
-        width: 86%
-        border: none
-        font-size: 16px
-        color: var(--text)
-        font-weight: bold
-        border-left: 3px solid #ccc
-        border-bottom: 3px solid #ccc
-        &:focus
-            border-left: 4px solid var(--main)
-            border-bottom: 5px solid var(--main)
+                background: rgba($g,.6)
     .short
         font-size: 22px
         margin-left: -30px
@@ -108,18 +99,8 @@ function save() {
         font-size: 12px
         padding: 12px 4px
         a, a:visited
-            color: #8d00fc
+            color: #666
             text-decoration: none
-    .su
-        animation: su .5s
-        box-shadow: 0 2px 6px #aaa
-    @keyframes su 
-        0%
-            margin-bottom: -500px
-            opacity: 0 
-        100%
-            margin-bottom: 0px
-            opacity: 1
-        
-
+            &:hover
+                color: $p
 </style>

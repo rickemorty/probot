@@ -1,7 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue'
 var { chat, app } = inject('shopbot')
-// import  from '@/comp/.vue'
+import Produto from './comp/Produto.vue'
 const nome = (c) => !c.user ? app.value.nome : (c.user == app.value.client ? 'Você' : c.user)
 const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
 </script>
@@ -10,13 +10,15 @@ const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
 .Chat.col
     .msg(v-for="c,i in chat" :class="`${c.user && c.user==app.client ? 'right col ae':'left'}`")
         .n.fb(v-if="i==0 || (nome(chat[i-1])!=nome(c))") {{nome(c)}}
-        .m(v-html="br(c.m)")
+        .m(v-if="c.m" v-html="br(c.m)")
+        Produto(v-if="c.p" :p="c.p")
 </template>
 
 <style lang="sass" scoped>
 .Chat
     flex: 1
     padding: 20px 4px
+    padding-bottom: 40px
     overflow-x: hidden
     overflow-y: auto
     .msg

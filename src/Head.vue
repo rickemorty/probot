@@ -13,7 +13,7 @@ const sacola = ()=>{
     .avatar(:style="`background-image:url(${app.avatar})`")
     .col.nome.fb
         .cw {{app.nome}}
-        .status.cg Online
+        .status.cg {{app.talk?'Escrevendo...':'Online'}}
     //i.fullicon.pt.fa-solid.fa-up-right-and-down-left-from-center(title="TELA CHEIA")
     .sacola.pt.tc.fb(@click="sacola" title="SACOLA") {{app.sacola.produtos.length}}
 
@@ -32,21 +32,21 @@ const sacola = ()=>{
         animation: talk 2.8s ease infinite
     .avatar
         border-radius: 100%
-        background: #ddd
+        background: #f1f1f1
         overflow: hidden
         border: 1px solid #00FF7F
         width: 52px
         height: 52px
         background-size: cover
         background-position: center
-        box-shadow: 0 1px 1px #666 
+        box-shadow: 0 1px 2px #666 
         &::after
             border-radius: 100%
             background: #00FF7F
             box-shadow: inset 2px #888
             width: 12px
             height: 12px
-            position: fixed
+            position: absolute
             content: ' '
             margin-top: 40px
             margin-left: 41px

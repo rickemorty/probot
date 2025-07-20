@@ -13,30 +13,41 @@ function UID(length = 24) {
   }
   return r;
 }
-
+const ID = document.getElementById('probox').src.split('id=')[1] || 'luzia'
 if (!localStorage.getItem('probox')) localStorage.setItem('probox', UID())
-const ID = localStorage.getItem('probox')
+const CLIENT = localStorage.getItem('probox')
 var chat = ref([])
-var app = ref({ id: document.getElementById('probox').src.split('id=')[1], client: ID, step: 0, talk: false, input: '', nome: 'Probox', avatar: "https://probox.app/img/logow.svg", sacola: { produtos: [] } })
+var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", sacola: { produtos: [] } })
 var ws = reactive({});
 var load = ref(true)
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
-
-const update = (msg) => {
-  var { id, m = false, form, list, products, button, cb, n } = msg
-  if (m) {
-    if (typeof m === 'string') m = [m]
-    m.map((msg, i) => setTimeout(() => chat.value.push({ m: msg }), i * 222))
-    let ct = document.querySelector('#shopbot .Chat')
-    if (ct) setTimeout(() => ct.scrollTo(0, 10000), m.length * 250)
+const scroll = (n) => {
+  let ct = document.querySelector('#shopbot .Chat')
+  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight, 250)
+}
+const update = (m) => {
+  app.value.talk = true
+  if (m.style) {
+    document.head.innerHTML += `<style>:root {${m.style}}</style>`;
+    app.value = { ...app.value, ...m }
   }
-  if (n) app.value.input = msg
+  if (m.cb) m.cb = eval(m.cb)
+  setTimeout(() => {
+    if (m.m) {
+      if (typeof m.m === 'string') m.m = [m.m]
+      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll()), i * 222))
+    }
+    if(m.p) m.p.map((p, i) => setTimeout(() => (chat.value.push({ p: p }), scroll()), i * 222))
+    scroll()
+    app.value.input = m
+    app.value.talk = false
+  }, 1000)
 }
 
-const go = (s = false) => {
+/* const go = (s = false) => {
   if (s > -1 && app.value.bot[s]) (app.value.step = s, update(app.value.bot[s]))
   else update(app.value.bot[++app.value.step])
-}
+} */
 
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
@@ -47,23 +58,10 @@ function WS() {
     load.value = false
     let m = JSON.parse(data)
     console.log(m);
-    app.value.talk = true
-    setTimeout(() => {
-      if (m.m) update(m)
-
-      if (m.bot) {
-        document.head.innerHTML += `<style>:root {${m.style}}</style>`;
-        m.bot.map((s, i) => s.cb && (m.bot[i].cb = eval(s.cb)))
-        app.value = { ...app.value, ...m }
-      }
-      if (m.s > -1) (app.value.step = m.s, update(app.value.bot[m.s]))
-      if (m.n) app.value.input = m
-      app.value.talk = false
-    }, 1000)
-
+    update(m)
   }
 }
-provide('shopbot', { app, send, chat, update })
+provide('shopbot', { app, send, chat, update, scroll })
 WS()
 
 </script>
@@ -94,23 +92,7 @@ body
   *
     transition: all 250ms
   button
-    border: none
-    cursor: pointer
-    background: none
-  input
-    border: none
-    padding: 12px 10px
-    border-bottom: 2px solid #ccc
-    margin-top: 2px
-    margin-bottom: 20px
-    &:focus
-      background: rgba($gr,.2)
-      border-bottom: 1px solid $gr
-    &:hover
-      border-top-right-radius: 10px
-      border-bottom-left-radius: 10px
-      border-left: 2px solid var(--main)
-      border-bottom: 2px solid var(--main)
+    cursor: pointer    
   label
     color: var(--main)
     font-size: 14px
@@ -198,5 +180,19 @@ body
         25%,75% 
           transform: rotate(0deg)
         50%     
-          transform: rotate(-90deg)    
+          transform: rotate(-90deg)
+  .sh
+    box-shadow: 0 2px 6px #aaa
+  .in
+      animation: in .5s
+  .out
+      animation: out .5s
+  @keyframes in 
+      0%
+          margin-bottom: -500px
+      100%
+          margin-bottom: 0px
+  @keyframes out
+      100%
+          margin-bottom: -500px  
 </style>
