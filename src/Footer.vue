@@ -1,4 +1,5 @@
 <script setup>
+import Categoria from './comp/Categoria.vue'
 import Produto from './comp/Produto.vue'
 import { inject, ref } from 'vue'
 var { app, chat, send, scroll, update } = inject('shopbot')
@@ -15,16 +16,13 @@ function txt(e, v) {
     else msg.value = ''
 }
 
-function save() {
-
-}
-
 function option({ e, o }) {
     app.value.input = {};
     chat.value.push({ user: app.value.client, m: o })
     if (e) {
-        if (e == 'produto') app.value.input.produto = true
-        else send({ e: e })
+        if (e == 'categoria') app.value.input.categoria = {}
+        if (e == 'produto') app.value.input.produto = {}
+        if (e != 'categoria' && e != 'produto') send({ e: e })
     }
 }
 </script>
@@ -33,10 +31,11 @@ function option({ e, o }) {
 .Footer
     .inputs
         //Form(v-if="app.input.form") 
-        Produto(v-if="app.input.produto" :e="true") 
+        Categoria.in(v-if="app.input.categoria" :c="app.input.categoria" :e="true") 
+        Produto.in(v-if="app.input.produto" :p="app.input.produto" :e="true") 
         .select.in.sh.border.bw(v-if="app.input.select" :class="app.talk && 'out'")
             .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
-        .txt.in.row.ac.sh(v-if="!app.input.select && !app.input.produto")
+        .txt.in.row.ac.sh(v-if="!app.input.select && !app.input.produto && !app.input.categoria")
             textarea(v-model="msg" @keydown.enter="txt" placeholder="Mensagem")
             //button.short.fa.fa-floppy-disk(@click="save" title="SALVAR")
             button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")

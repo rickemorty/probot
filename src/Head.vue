@@ -1,10 +1,11 @@
 <script setup>
 import { inject, ref } from 'vue'
-var { app, talk, chat } = inject('shopbot')
-
-// import  from '@/comp/.vue'
+var { app, talk, chat, update, scroll } = inject('shopbot')
 const sacola = ()=>{
-    chat.value.push({m:"Você possui"})
+    scroll()
+    let n = app.value.pedido.produtos.length
+    if(!n) update({m:"Seu pedido não possui <b>nenhum produto.</b>"})
+    else update({m: [`Seu pedido possui <b>${n} produto${n>1?'s':''}</b>.`, ...app.value.pedido.produtos]})
 }
 </script>
 
@@ -15,7 +16,7 @@ const sacola = ()=>{
         .cw {{app.nome}}
         .status.cg {{app.talk?'Escrevendo...':'Online'}}
     //i.fullicon.pt.fa-solid.fa-up-right-and-down-left-from-center(title="TELA CHEIA")
-    .sacola.pt.tc.fb(@click="sacola" title="SACOLA") {{app.sacola.produtos.length}}
+    .sacola.pt.tc.fb(@click="sacola" title="SACOLA") {{app.pedido.produtos.length}}
 
 </template>
 

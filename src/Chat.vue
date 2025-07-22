@@ -10,8 +10,9 @@ const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
 .Chat.col
     .msg(v-for="c,i in chat" :class="`${c.user && c.user==app.client ? 'right col ae':'left'}`")
         .n.fb(v-if="i==0 || (nome(chat[i-1])!=nome(c))") {{nome(c)}}
-        .m(v-if="c.m" v-html="br(c.m)")
-        Produto(v-if="c.p" :p="c.p")
+        .row
+            Produto.m(v-if="c.m._id" :p="c.m")
+        .m(v-if="!c.m._id" v-html="br(c.m)")
 </template>
 
 <style lang="sass" scoped>
@@ -64,16 +65,6 @@ const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
                 width: 16px
                 height: 16px
                 margin: 0
-                margin-left: 12px
-    @keyframes lgrow 
-        0%
-            margin-left: -100%
-        100%
-            margin-left:  0px
-    @keyframes rgrow 
-        0%
-            margin-right: -100%
-        100%
-            margin-right:  0px    
+                margin-left: 12px 
         
 </style>

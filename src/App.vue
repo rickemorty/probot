@@ -17,37 +17,34 @@ const ID = document.getElementById('probox').src.split('id=')[1] || 'luzia'
 if (!localStorage.getItem('probox')) localStorage.setItem('probox', UID())
 const CLIENT = localStorage.getItem('probox')
 var chat = ref([])
-var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", sacola: { produtos: [] } })
+var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { produtos: [] } })
 var ws = reactive({});
 var load = ref(true)
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
-const scroll = (n) => {
+const scroll = (n=0) => {
   let ct = document.querySelector('#shopbot .Chat')
-  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight, 250)
+  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight+500, n)
 }
 const update = (m) => {
+  scroll()
   app.value.talk = true
   if (m.style) {
     document.head.innerHTML += `<style>:root {${m.style}}</style>`;
     app.value = { ...app.value, ...m }
   }
   if (m.cb) m.cb = eval(m.cb)
+  else m.cb = app.value.input.cb || false
   setTimeout(() => {
     if (m.m) {
       if (typeof m.m === 'string') m.m = [m.m]
-      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll()), i * 222))
+      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll(i*250)), i * 222))
     }
-    if(m.p) m.p.map((p, i) => setTimeout(() => (chat.value.push({ p: p }), scroll()), i * 222))
-    scroll()
+    if(m.a) app.value.a=true
     app.value.input = m
     app.value.talk = false
-  }, 1000)
+    scroll(250)
+  }, 500)
 }
-
-/* const go = (s = false) => {
-  if (s > -1 && app.value.bot[s]) (app.value.step = s, update(app.value.bot[s]))
-  else update(app.value.bot[++app.value.step])
-} */
 
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
@@ -56,6 +53,7 @@ function WS() {
   ws.onerror = (e) => console.error(e);
   ws.onmessage = ({ data }) => {
     load.value = false
+    console.log(data);
     let m = JSON.parse(data)
     console.log(m);
     update(m)
@@ -95,14 +93,16 @@ body
     cursor: pointer    
   label
     color: var(--main)
-    font-size: 14px
   input:focus, textarea:focus
     outline: none
   .container
     height: 100%
   .row
       display: flex
-      flex-direction: row 
+  .row-r
+      display: flex
+      flex-direction: row-reverse 
+
   .col
       display: flex
       flex-direction: column
@@ -123,6 +123,8 @@ body
       justify-content: center
   .js
       justify-content: space-between
+  .ja
+      justify-content: space-around
   .je
       justify-content: flex-end
   .tc
@@ -145,6 +147,21 @@ body
     color: #8D00FC
   .bw
     background: white
+  .tipo
+    font-size: 34px
+    padding: 16px 14px
+    padding-bottom: 24px
+    color: #666
+    i
+        margin-right: 8px
+  .campo
+      margin-bottom: 20px
+      padding: 2px 16px
+  button:hover
+      background: $g
+  label
+      font-weight: bold
+      font-size: 12px
   .load
       width: 48px
       height: 48px
@@ -195,4 +212,14 @@ body
   @keyframes out
       100%
           margin-bottom: -500px  
+  @keyframes lgrow 
+      0%
+          margin-left: -100%
+      100%
+          margin-left:  0px
+  @keyframes rgrow 
+      0%
+          margin-right: -100%
+      100%
+          margin-right:  0px 
 </style>
