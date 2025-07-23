@@ -24,7 +24,7 @@ Pagamentos online, recebe pagamento por cartoes, boleto e pix.
 Utilizamos a melhor IA do mercado.
 sigiloso e seguro. Seus dados ficam armazenados em um banco de dados proprio, não compartilha servidor de dados com outros clientes.
 Facil instalação, basta colar uma linha de script onde queira instalar.
-
+Desenvolvido excluivo para vendas faceis, rapidas e eficientes.
 
 FUNCIONALIDADES
 Assistente com Inteligencia Artificial

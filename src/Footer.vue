@@ -11,18 +11,28 @@ function txt(e, v) {
     if (app.value.input.h) m = '******'
     chat.value.push({ user: app.value.client, m: m })
     scroll()
-    if (app.value.input.cb)
-        setTimeout(() => (app.value.input.cb(msg.value), msg.value = ''), 200)
-    else msg.value = ''
+    setTimeout(() => { app.value.input.cb ? app.value.input.cb(msg.value) : send({ e: 'ia', m: msg.value }); msg.value = '' }, 200)
 }
 
-function option({ e, o }) {
-    app.value.input = {};
+function option({ e, o, v }) {
+    app.value.input = {}
     chat.value.push({ user: app.value.client, m: o })
+
     if (e) {
-        if (e == 'categoria') app.value.input.categoria = {}
-        if (e == 'produto') app.value.input.produto = {}
-        if (e != 'categoria' && e != 'produto') send({ e: e })
+        if (e == 'concluir') {
+            // solicitar endereço,forma de pagamento, horario de entrega
+            alert(1)
+            return
+        }
+        if (e == 'pc') {
+            setTimeout(() => chat.value.push({ m: "Categoria ou Produto?" }), 400)
+            setTimeout(() => app.value.input.select = [{ e: 'categoria', o: 'Nova Categoria' }, { e: 'produto', o: 'Novo Produto' }], 600)
+            return
+        }
+        if (e == 'categoria') { app.value.input.categoria = { nome: "", foto: [], desc: "", ativo: true }; return }
+        if (e == 'produto') { send({ e: 'categorias', l: true }); app.value.input.produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }; return }
+        if (e == 'txt') { app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) }; return }
+        send({ e: e, o: v || o })
     }
 }
 </script>
@@ -35,7 +45,7 @@ function option({ e, o }) {
         Produto.in(v-if="app.input.produto" :p="app.input.produto" :e="true") 
         .select.in.sh.border.bw(v-if="app.input.select" :class="app.talk && 'out'")
             .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
-        .txt.in.row.ac.sh(v-if="!app.input.select && !app.input.produto && !app.input.categoria")
+        .txt.in.row.ac.sh(v-if="app.input.txt")
             textarea(v-model="msg" @keydown.enter="txt" placeholder="Mensagem")
             //button.short.fa.fa-floppy-disk(@click="save" title="SALVAR")
             button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
@@ -49,6 +59,9 @@ $p: #8d00fc
 .Footer
     .inputs
         padding: 0 5%
+        margin-bottom: 44px
+        position: relative
+        z-index: 777
     .txt
         background: white
         border-left: 3px solid #ccc
@@ -96,7 +109,10 @@ $p: #8d00fc
             font-size: 34px
     .probox
         font-size: 12px
-        padding: 12px 4px
+        padding: 12px 0
+        width: 100%
+        position: absolute
+        bottom: 0
         a, a:visited
             color: #666
             text-decoration: none

@@ -34,8 +34,8 @@ const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
         .m
             border: 1px solid var(--border)
             border-bottom: 3px solid var(--border)
-            padding: 10px 14px
-            border-radius: 12px
+            padding: 12px 14px
+            border-radius: 8px
             min-width: 40%
             max-width: 60%
     .left

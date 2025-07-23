@@ -20,12 +20,14 @@ var chat = ref([])
 var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { produtos: [] } })
 var ws = reactive({});
 var load = ref(true)
+var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
-const scroll = (n=0) => {
+const scroll = (n = 0) => {
   let ct = document.querySelector('#shopbot .Chat')
-  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight+500, n)
+  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 500, n)
 }
 const update = (m) => {
+  if (m.categorias) { categorias.value = m.categorias; return }
   scroll()
   app.value.talk = true
   if (m.style) {
@@ -33,17 +35,17 @@ const update = (m) => {
     app.value = { ...app.value, ...m }
   }
   if (m.cb) m.cb = eval(m.cb)
-  else m.cb = app.value.input.cb || false
   setTimeout(() => {
     if (m.m) {
       if (typeof m.m === 'string') m.m = [m.m]
-      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll(i*250)), i * 222))
+      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll(i * 250)), i * 222))
     }
-    if(m.a) app.value.a=true
-    app.value.input = m
+    if (m.a) m.select = [{ e: 'pc', o: "Novo Produto/Categoria" }, { e: 'categorias', o: 'Editar Produtos' }]
+    if(!m.select) m.txt=true
+    app.value.input = m 
     app.value.talk = false
     scroll(250)
-  }, 500)
+  }, 400)
 }
 
 function WS() {
@@ -59,7 +61,7 @@ function WS() {
     update(m)
   }
 }
-provide('shopbot', { app, send, chat, update, scroll })
+provide('shopbot', { app, send, chat, update, scroll, categorias: categorias })
 WS()
 
 </script>
@@ -147,18 +149,85 @@ body
     color: #8D00FC
   .bw
     background: white
+  .sacola
+    background-image: url(https://probox.app/shopbot/img/sacola.svg)
+    background-size: 100% 100%
+    padding: 10px
+    padding-top: 20px
+    opacity: .9
+    color: var(--main)
+  .input
+    border-radius: 12px
+    background: white  
+    overflow: hidden       
+    animation: lgrow .5s
   .tipo
     font-size: 34px
-    padding: 16px 14px
+    padding: 18px 14px
     padding-bottom: 24px
     color: #666
     i
         margin-right: 8px
   .campo
-      margin-bottom: 20px
-      padding: 2px 16px
+    margin-bottom: 12px
+    padding: 2px 16px
+    select
+      border-radius: 6px
+    input,textarea, select
+      margin-top: 1px
+      padding: 12px 10px
+      border: none
+      border-bottom: 2px solid #ccc
+      &:focus
+        background: rgba($gr,.2)
+        border-bottom: 1px solid $gr
+      &:hover
+        border-top-right-radius: 10px
+        border-bottom-left-radius: 10px
+        border-left: 2px solid var(--main)
+        border-bottom: 2px solid var(--main)
+    input[type="number"]:hover
+      border-bottom: 1px solid $gr
+    .nome
+      font-size: 22px
+      margin-top: 4px
+  .foto
+    background-size: cover
+    background-position: center center
+    width: 100% 
+    height: 300px
+  .fechar
+    font-weight: bold
+    width: 100%
+    border: none
+    padding: 15px 10px
+    font-size: 15px
+    margin-top: 10px
+    i
+      margin-right: 5px
+  .fechado
+    width: 222px 
+    overflow: hidden
+    padding: 0
+    padding-bottom: 10px
+    margin-bottom: 10px
+    /* border-left: 2px solid #ccc */
+    border-bottom: 4px solid #ccc
+    &:hover
+        border-left: 2px solid var(--main)
+        border-bottom: 4px solid var(--main) 
+    .foto
+      height: 200px
+    .campo
+        margin: 8px 0
+        padding: 0       
+    .nome
+        font-size: 20px 
+        margin-top: 4px
+    .preco, qtd
+        font-size: 22px
   button:hover
-      background: $g
+      background: $gr
   label
       font-weight: bold
       font-size: 12px
@@ -201,9 +270,9 @@ body
   .sh
     box-shadow: 0 2px 6px #aaa
   .in
-      animation: in .5s
+      animation: in .4s
   .out
-      animation: out .5s
+      animation: out .4s
   @keyframes in 
       0%
           margin-bottom: -500px
@@ -211,7 +280,7 @@ body
           margin-bottom: 0px
   @keyframes out
       100%
-          margin-bottom: -500px  
+          margin-bottom: -700px  
   @keyframes lgrow 
       0%
           margin-left: -100%

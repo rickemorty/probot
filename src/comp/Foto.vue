@@ -62,8 +62,8 @@ $g: #00FF7F
         width: 170px
         background: white
         border-radius: 8px
-        border: 2px solid #ccc
-        border-bottom: 4px solid #ccc
+        border: 1px solid #ccc
+        border-bottom: 3px solid #ccc
         input
             margin: 0
             padding: 6px

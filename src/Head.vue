@@ -1,11 +1,11 @@
 <script setup>
 import { inject, ref } from 'vue'
 var { app, talk, chat, update, scroll } = inject('shopbot')
-const sacola = ()=>{
+const sacola = () => {
     scroll()
     let n = app.value.pedido.produtos.length
-    if(!n) update({m:"Seu pedido não possui <b>nenhum produto.</b>"})
-    else update({m: [`Seu pedido possui <b>${n} produto${n>1?'s':''}</b>.`, ...app.value.pedido.produtos]})
+    if (!n) chat.value.push({ m: "Seu pedido não possui <b>nenhum produto.</b>" })
+    else update({ m: [`Seu pedido possui <b>${n} produto${n > 1 ? 's' : ''}</b>.`, ...app.value.pedido.produtos, 'Concluir o pedido?'], select: [{ e: 'concluir', o: 'Concluir' }, { o: 'Continuar comprando' }] })
 }
 </script>
 
@@ -68,12 +68,6 @@ const sacola = ()=>{
         &:hover
             font-size: 22px  
     .sacola
-        background: url(https://probox.app/shopbot/img/sacola.svg)
-        background-size: 100% 100%
-        padding: 10px
-        padding-top: 20px
-        opacity: .9
-        color: var(--main)
         &:hover
             font-size: 22px
             opacity: 1
