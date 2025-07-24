@@ -40,9 +40,9 @@ const update = (m) => {
       if (typeof m.m === 'string') m.m = [m.m]
       m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll(i * 250)), i * 222))
     }
-    if (m.a) m.select = [{ e: 'pc', o: "Novo Produto/Categoria" }, { e: 'categorias', o: 'Editar Produtos' }]
-    if(!m.select) m.txt=true
-    app.value.input = m 
+    if (m.a) m.select = [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }]
+    if (!m.select) m.txt = true
+    app.value.input = m
     app.value.talk = false
     scroll(250)
   }, 400)
@@ -61,7 +61,8 @@ function WS() {
     update(m)
   }
 }
-provide('shopbot', { app, send, chat, update, scroll, categorias: categorias })
+const admin = () => app.value.input = { select: [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
+provide('shopbot', { app, send, chat, update, scroll, categorias: categorias, admin:admin })
 WS()
 
 </script>
@@ -81,6 +82,7 @@ $s: 850px
 $m: 992px
 $g: 1440px
 $gr: #00FF7F 
+$r: #fd6363 
 body
   margin: 0
   height: 100vh
@@ -161,13 +163,20 @@ body
     background: white  
     overflow: hidden       
     animation: lgrow .5s
+    .tipo
+      margin-bottom: 20px
+      border-bottom: 1px solid #ddd
+      .fa-trash
+        padding: 2px
+        &:hover
+          color: $r
   .tipo
-    font-size: 34px
-    padding: 18px 14px
-    padding-bottom: 24px
-    color: #666
-    i
-        margin-right: 8px
+    padding: 8px 10px
+    font-size: 13px
+    color: #888
+    background: #eee
+    text-transform: uppercase
+    font-weight: bold
   .campo
     margin-bottom: 12px
     padding: 2px 16px

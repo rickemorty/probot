@@ -1,7 +1,6 @@
 <script setup>
 import { reactive } from 'vue'
-const { cb } = defineProps(['cb'])
-var f = reactive([])
+const { cb, f } = defineProps(['cb', 'f'])
 
 function files() {
     const fi = document.createElement('input')
