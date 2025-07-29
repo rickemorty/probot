@@ -2,7 +2,7 @@
 import Chave from './comp/Chave.vue'
 import Foto from './comp/Foto.vue'
 import { inject, ref } from 'vue'
-var { app, chat, send, scroll, update } = inject('shopbot')
+var { app, chat, send, update } = inject('shopbot')
 </script>
 
 <template lang="pug">

@@ -17,18 +17,13 @@ const ID = document.getElementById('probox').src.split('id=')[1] || 'luzia'
 if (!localStorage.getItem('probox')) localStorage.setItem('probox', UID())
 const CLIENT = localStorage.getItem('probox')
 var chat = ref([])
-var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { produtos: [] } })
 var ws = reactive({});
 var load = ref(true)
 var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
-const scroll = (n = 0) => {
-  let ct = document.querySelector('#shopbot .Chat')
-  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 500, n)
-}
+
 const update = (m) => {
   if (m.categorias) { categorias.value = m.categorias; return }
-  scroll()
   app.value.talk = true
   if (m.style) {
     document.head.innerHTML += `<style>:root {${m.style}}</style>`;
@@ -38,16 +33,16 @@ const update = (m) => {
   setTimeout(() => {
     if (m.m) {
       if (typeof m.m === 'string') m.m = [m.m]
-      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg }), scroll(i * 250)), i * 222))
+      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), i * 300))
     }
-    if (m.a) m.select = [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }]
+    if (m.a) { app.value.a = true; m.select = [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
     if (!m.select) m.txt = true
     app.value.input = m
     app.value.talk = false
-    scroll(250)
   }, 400)
 }
 
+var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { produtos: [] }, })
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
   ws.onclose = () => setTimeout(WS(), Math.floor(3000 + Math.random() * 7000))
@@ -55,14 +50,14 @@ function WS() {
   ws.onerror = (e) => console.error(e);
   ws.onmessage = ({ data }) => {
     load.value = false
-    console.log(data);
+    //console.log(data);
     let m = JSON.parse(data)
     console.log(m);
     update(m)
   }
 }
 const admin = () => app.value.input = { select: [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
-provide('shopbot', { app, send, chat, update, scroll, categorias: categorias, admin:admin })
+provide('shopbot', { app, send, chat, update, categorias: categorias, admin, oi: () => update({ select: app.value.select }) })
 WS()
 
 </script>
@@ -96,7 +91,7 @@ body
   button
     cursor: pointer    
   label
-    color: var(--main)
+    color: #444
   input:focus, textarea:focus
     outline: none
   .container
@@ -106,7 +101,6 @@ body
   .row-r
       display: flex
       flex-direction: row-reverse 
-
   .col
       display: flex
       flex-direction: column
@@ -173,13 +167,16 @@ body
   .tipo
     padding: 8px 10px
     font-size: 13px
-    color: #888
-    background: #eee
+    color: #eee
+    background: var(--main)
     text-transform: uppercase
     font-weight: bold
+    opacity: .7
   .campo
-    margin-bottom: 12px
+    margin-bottom: 20px
     padding: 2px 16px
+    &:hover label
+      color: var(--main)
     select
       border-radius: 6px
     input,textarea, select
@@ -189,14 +186,15 @@ body
       border-bottom: 2px solid #ccc
       &:focus
         background: rgba($gr,.2)
-        border-bottom: 1px solid $gr
+        border-bottom: 1px solid $gr         
       &:hover
-        border-top-right-radius: 10px
-        border-bottom-left-radius: 10px
-        border-left: 2px solid var(--main)
         border-bottom: 2px solid var(--main)
-    input[type="number"]:hover
-      border-bottom: 1px solid $gr
+    .qtd
+      color: ciano
+      &:hover
+        border-bottom: 1px solid $gr
+    textarea
+      min-height: 100px
     .nome
       font-size: 22px
       margin-top: 4px
@@ -240,6 +238,7 @@ body
   label
       font-weight: bold
       font-size: 12px
+      margin-bottom: 2px
   .load
       width: 48px
       height: 48px
@@ -257,6 +256,9 @@ body
       &:before 
         transform-origin: 100% 100%
         animation-name: rtr-rx
+      &.s
+        width: 24px
+        height: 24px
       @keyframes mov-y
         0%,25% 
           transform: translateY(0) scaleY(1)

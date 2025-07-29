@@ -2,65 +2,48 @@
 import Categoria from './comp/Categoria.vue'
 import Produto from './comp/Produto.vue'
 import { inject, ref } from 'vue'
-var { app, chat, send, scroll, update, categorias } = inject('shopbot')
+var { app, chat, send, update, categorias, oi } = inject('shopbot')
 var msg = ref("")
 
-function txt(e, v) {
+const categoria = { nome: "", foto: [], desc: "", ativo: true }
+const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
+
+const mid = { //{ e, o, v }
+  oi: oi,
+  login: () => update({
+    m: `Informe o seu <b>E-mail</b>:`, cb: (e) => update({
+      m: `Confirme a <b>Senha</b> por gentileza.`, h: true,
+      cb: (s) => send({ e: 'login', m: { email: e, senha: s } })
+    })
+  }),
+  ocategoria: () => setTimeout(() => app.value.input = { n: 'CATEGORIA', select: [{ e: 'categoria', o: 'Nova' }, { e: 'categorias', o: 'Editar' }] }, 300),
+  oproduto: () => setTimeout(() => app.value.input = { n: 'PRODUTO', select: [{ e: 'produto', o: 'Novo' }, { e: 'categorias', v: 'p', o: 'Editar' }] }, 300),
+  categoria: ({ v }) => app.value.input = { categoria: v || categoria },
+  produto: ({ v }) => app.value.input = { produto: v || produto },
+  txt: (m) => { app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) } },
+  concluir: () => { // solicitar endereço,forma de pagamento, horario de entrega
+  },
+}
+
+function option(m) {
+  app.value.input = {}
+  chat.value.push({ user: app.value.client, m: m.o })
+  if (m.e) {
+    if (mid[m.e]) mid[m.e](m)
+    else send({ e: m.e, o: m.v || m.o })
+  }
+}
+
+function txt(e) {
   e.preventDefault();
   let m = msg.value
   if (app.value.input.h) m = '******'
   chat.value.push({ user: app.value.client, m: m })
-  scroll()
-  if (msg.value.toLowerCase() == 'admin') {
-    /* app.value.input.cb = (e) => {
-      app.value.input.cb = (s) => send({ e: 'login', m: { email: e, senha: s } })
-      setTimeout(() => (chat.value.push({ m: `Confirme a <b>Senha</b> por gentileza.`, h: true }), scroll(300)), 400)
-    } */
-    update({
-      m: `Informe o seu <b>E-mail</b>:`, cb: (e) => update({
-        m: `Confirme a <b>Senha</b> por gentileza.`, h: true,
-        cb: (s) => send({ e: 'login', m: { email: e, senha: s } })
-      })
-    })
-    //setTimeout(() => (chat.value.push({ m: `Informe o seu <b>E-mail</b>:` }), scroll(300)), 400)
-    scroll(500)
-    msg.value = ''
-    return
-  }
+  if (msg.value.toLowerCase() == 'admin') { mid.login(); msg.value = ''; return }
   setTimeout(() => { app.value.input.cb ? app.value.input.cb(msg.value) : send({ e: 'ia', m: msg.value }); msg.value = '' }, 200)
 }
 
-function option({ e, o, v }) {
-  app.value.input = {}
-  chat.value.push({ user: app.value.client, m: o })
-
-  if (e) {
-    if (e == 'concluir') {
-      // solicitar endereço,forma de pagamento, horario de entrega
-
-      return
-    }
-    if (e == 'oproduto') {
-      setTimeout(() => app.value.input = { n: 'PRODUTO', select: [{ e: 'produto', o: 'Novo' }, { e: 'produtos', o: 'Editar' }] }, 300)
-      return
-    }
-    if (e == 'ocategoria') {
-      setTimeout(() => app.value.input = { n: 'CATEGORIA', select: [{ e: 'categoria', o: 'Nova' }, { e: 'editarCategoria', o: 'Editar' }] }, 300)
-      return
-    }
-    if (e == 'editarCategoria') {
-      send({ e: 'categorias', l: true });
-      setTimeout(() => chat.value.push({ m: "Escolha uma categoria:" }), 200)
-      setTimeout(() => app.value.input = { n: 'CATEGORIAS', select: categorias.value.map(c => ({ e: 'categoria', o: c.nome, v: c })) }, 400)
-      return
-    }
-
-    if (e == 'categoria') { app.value.input = { categoria: v && v._id ? v : ({ nome: "", foto: [], desc: "", ativo: true }) }; return }
-    if (e == 'produto') { send({ e: 'categorias', l: true }); app.value.input = { produto: { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true } }; return }
-    if (e == 'txt') { app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) }; return }
-    send({ e: e, o: v || o })
-  }
-}
+console.log(app.value.input);
 </script>
 
 <template lang="pug" scoped>
@@ -99,7 +82,7 @@ $p: #8d00fc
         border-left: 4px solid var(--main)
         border-bottom: 5px solid var(--main)
   textarea
-    width: 86%
+    flex: 1
     border: none
     font-size: 16px
     color: var(--text)

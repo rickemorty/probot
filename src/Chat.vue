@@ -1,9 +1,14 @@
 <script setup>
-import { inject, ref } from 'vue'
+import { inject, ref, watch } from 'vue'
 var { chat, app } = inject('shopbot')
 import Produto from './comp/Produto.vue'
 const nome = (c) => !c.user ? app.value.nome : (c.user == app.value.client ? 'Você' : c.user)
 const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
+
+watch(chat.value, () => {
+    let ct = document.querySelector('#shopbot .Chat')
+    if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 1000, 500)
+})
 </script>
 
 <template lang="pug">
