@@ -96,9 +96,10 @@ $g: #00FF7F
   overflow: hidden       
   animation: lgrow .5s
   .categoria
-      margin-top: -4px
+      margin-top: -2px
       color: #666
       text-transform: uppercase
+      font-size: 13px
   .preco
     color: $g
     font-size: 26px

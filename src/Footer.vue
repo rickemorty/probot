@@ -8,6 +8,13 @@ var msg = ref("")
 const categoria = { nome: "", foto: [], desc: "", ativo: true }
 const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
 
+const nome = { m: 'Qual é o <b>Nome completo</b> de quem irá receber?', txt: true, cb: (m) => { app.value.pedido.nome = m; update(telefone) } }
+const telefone = { m: 'Qual é o seu número de contato? <i>(Pode ser Whatsapp)</i>', txt: true, cb: (m) => { app.value.pedido.fone = m; update(cpf) } }
+const cpf = { m: 'Informe o seu <b>CPF</b> para a emissão do cupom:', txt: true, cb: (m) => { app.value.pedido.cpf = m.replace(/[^0-9]/g, ''); update(endereco) } }
+const endereco = { m: 'Qual é o <b>endereço completo</b> para entrega?<br><b>Endereço, número, complemento, Bairro, Cidade e CEP. </b>', txt: true, cb: (m) => { app.value.pedido.endereco = m; update(forma) } }
+const forma = { m: 'Qual é a <b>forma de pagamento</b>?', select: [{ e: 'forma', o: 'PIX' }, { e: 'forma', o: 'CARTÃO' }] }
+const gerando = { m: 'Obrigada, estou gerando os dados para pagamento, um instante...' }
+
 const mid = { //{ e, o, v }
   oi: oi,
   login: () => update({
@@ -21,8 +28,9 @@ const mid = { //{ e, o, v }
   categoria: ({ v }) => app.value.input = { categoria: v || categoria },
   produto: ({ v }) => app.value.input = { produto: v || produto },
   txt: (m) => { app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) } },
-  concluir: () => { // solicitar endereço,forma de pagamento, horario de entrega
-  },
+  concluir: () => update(nome),
+  forma: ({ o }) => { app.value.pedido.forma = o; update(gerando); app.value.input = {}; send({ e: 'pedido', pedido: app.value.pedido }) },
+  copiar: ({ v }) => { update({m:'Código Pix copiado.'}); navigator.clipboard.writeText(v)}
 }
 
 function option(m) {
@@ -40,10 +48,11 @@ function txt(e) {
   if (app.value.input.h) m = '******'
   chat.value.push({ user: app.value.client, m: m })
   if (msg.value.toLowerCase() == 'admin') { mid.login(); msg.value = ''; return }
-  setTimeout(() => { app.value.input.cb ? app.value.input.cb(msg.value) : send({ e: 'ia', m: msg.value }); msg.value = '' }, 200)
+  if (app.value.input.cb) app.value.input.cb(msg.value)
+  else send({ e: 'ia', m: msg.value });
+  msg.value = ''
 }
 
-console.log(app.value.input);
 </script>
 
 <template lang="pug" scoped>

@@ -229,7 +229,6 @@ body
         margin: 8px 0
         padding: 0       
     .nome
-        font-size: 20px 
         margin-top: 4px
     .preco, qtd
         font-size: 22px

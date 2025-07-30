@@ -1,6 +1,11 @@
 # shopbot
-
-Categorias de produto
+Integração assas
+Pix ok, 
+fazer cartão de credito
+Guardar os dados do pedido
+notificar pedido wzp
+pedidos do admin
+hostinger vps com coolify
 
 # ARGUMENTOS
 
