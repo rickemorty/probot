@@ -1,18 +1,14 @@
 <script setup>
 import Categoria from './comp/Categoria.vue'
 import Produto from './comp/Produto.vue'
+import Pedido from './comp/Pedido.vue'
+import Cartao from './comp/Cartao.vue'
 import { inject, ref } from 'vue'
 var { app, chat, send, update, categorias, oi } = inject('shopbot')
 var msg = ref("")
 
 const categoria = { nome: "", foto: [], desc: "", ativo: true }
 const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
-
-const nome = { m: 'Qual é o <b>Nome completo</b> de quem irá receber?', txt: true, cb: (m) => { app.value.pedido.nome = m; update(telefone) } }
-const telefone = { m: 'Qual é o seu número de contato? <i>(Pode ser Whatsapp)</i>', txt: true, cb: (m) => { app.value.pedido.fone = m; update(cpf) } }
-const cpf = { m: 'Informe o seu <b>CPF</b> para a emissão do cupom:', txt: true, cb: (m) => { app.value.pedido.cpf = m.replace(/[^0-9]/g, ''); update(endereco) } }
-const endereco = { m: 'Qual é o <b>endereço completo</b> para entrega?<br><b>Endereço, número, complemento, Bairro, Cidade e CEP. </b>', txt: true, cb: (m) => { app.value.pedido.endereco = m; update(forma) } }
-const forma = { m: 'Qual é a <b>forma de pagamento</b>?', select: [{ e: 'forma', o: 'PIX' }, { e: 'forma', o: 'CARTÃO' }] }
 const gerando = { m: 'Obrigada, estou gerando os dados para pagamento, um instante...' }
 
 const mid = { //{ e, o, v }
@@ -27,10 +23,11 @@ const mid = { //{ e, o, v }
   oproduto: () => setTimeout(() => app.value.input = { n: 'PRODUTO', select: [{ e: 'produto', o: 'Novo' }, { e: 'categorias', v: 'p', o: 'Editar' }] }, 300),
   categoria: ({ v }) => app.value.input = { categoria: v || categoria },
   produto: ({ v }) => app.value.input = { produto: v || produto },
-  txt: (m) => { app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) } },
-  concluir: () => update(nome),
-  forma: ({ o }) => { app.value.pedido.forma = o; update(gerando); app.value.input = {}; send({ e: 'pedido', pedido: app.value.pedido }) },
-  copiar: ({ v }) => { update({m:'Código Pix copiado.'}); navigator.clipboard.writeText(v)}
+  txt: (m) => app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) },
+  concluir: () => app.value.input = { pedido: true },
+  forma: ({ o, v }) => { app.value.pedido.forma = v || o; update(gerando); app.value.input = {};let p = {...app.value.pedido}; p.cpf = p.cpf.replace(/[^0-9]/g, ''); send({ e: 'pedido', pedido: app.value.pedido }) },
+  copiar: ({ v }) => { update({ m: 'Código Pix copiado.' }); navigator.clipboard.writeText(v) },
+  cartao: () => app.value.input = { cartao: true }
 }
 
 function option(m) {
@@ -68,6 +65,8 @@ function txt(e) {
             textarea(v-model="msg" @keydown.enter="txt" placeholder="Mensagem")
             //button.short.fa.fa-floppy-disk(@click="save" title="SALVAR")
             button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
+        Pedido.in(v-if="app.input.pedido")
+        Cartao.in(v-if="app.input.cartao")
     .probox.tc.fb
         a(href="https://probox.app" target="_blank") © PROBOX
 </template>

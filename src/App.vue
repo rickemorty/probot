@@ -143,6 +143,8 @@ body
     color: #00FF7F
   .cp
     color: #8D00FC
+  .cr
+    color: #fd5755
   .bw
     background: white
   .sacola

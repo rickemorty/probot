@@ -7,7 +7,7 @@ export default {
             value = value.replace(/\D/g, '')
 
             switch (maskType) {
-                case 'phone':
+                case 'fone':
                     if (value.length > 11) value = value.slice(0, 11)
                     value = value.replace(/^(\d{2})(\d)/g, '($1) $2')
                     value = value.replace(/(\d{5})(\d)/, '$1-$2')
@@ -30,7 +30,7 @@ export default {
 
                 case 'cep':
                     value = value.slice(0, 8)
-                    value = value.replace(/(\d{5})(\d)/, '$1-$2')
+                    value = value.replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1-$2')
                     break
 
                 case 'preco':

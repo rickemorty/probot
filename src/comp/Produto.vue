@@ -45,7 +45,7 @@ var out = ref(false)
 
 <template lang="pug">
 .Produto.input.border.bw(@click="abrir" :class="`${out && 'out'} ${e ?'sh': 'fechado pt'}`")
-  .tipo.row.js(v-if="e") Produto
+  .tipo.row.js.ac(v-if="e") Produto
     i.fa.fa-trash.pt(v-if=" app.a && produto._id" @click="del" title="EXCLUIR")
   .campo.col(v-if="e && app.a")
     label CATEGORIA
