@@ -26,7 +26,7 @@ function fechar() {
     if (produto.qtd > 0) {
       app.value.pedido.produtos.push(produto)
       if (produto.qtd == 1)
-        chat.value.push({ m: '<b>Quando quiser finalizar o pedido, clique no icone:</b> <div class="sacola" style="background-color: var(--main);width: 25px;height: 20px;padding: 6px 6px"></div>' })
+        chat.value.push({ m: 'Quando quiser finalizar o pedido, basta clicar no botão <b>CONCLUIR</b>.' })
     }
   }
 

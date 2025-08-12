@@ -1,10 +1,7 @@
 <script setup>
 import { inject, ref } from 'vue'
-var { app, chat, update } = inject('shopbot')
+var { app, chat, send } = inject('shopbot')
 var nocep = ref(false)
-
-const forma = { m: 'Qual é a <b>forma de pagamento</b>?', select: [{ e: 'forma', o: 'PIX' }, { e: 'cartao', o: 'CARTÃO', v: 'CREDIT_CARD' }] }
-
 
 async function cep() {
   let cep = app.value.pedido.cep.replace(/\D/g, '');
@@ -13,7 +10,7 @@ async function cep() {
     app.value.pedido.cidade = ""
     app.value.pedido.bairro = ""
     app.value.pedido.uf = ""
-    nocep.value=false
+    nocep.value = false
     try {
       const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`)
       const data = await response.json()
@@ -37,7 +34,7 @@ async function cep() {
 <template lang="pug">
 .Pedido.input.border.bw
   .tipo.row.js.ac PEDIDO
-    i.fa.fa-times.pt(@click="app.input={txt:true}" title="EXCLUIR")
+    i.fa.fa-times.pt(@click="app.input={txt:true}" title="FECHAR")
   .campo.col
     label NOME
     input(v-model="app.pedido.nome" placeholder="Nome Completo")
@@ -52,7 +49,7 @@ async function cep() {
     .row.ac
       .col
         label CEP
-        input(v-model="app.pedido.cep" v-mask="'cep'" @input="cep()" placeholder="CEP" style="width:100px")
+        input(v-model="app.pedido.cep" v-mask="'cep'" @input="cep()" placeholder="CEP" style="width:170px")
       .cep.fb.cr(v-if="nocep") CEP não encontrado.
   .campo.col(v-if="app.pedido.logradouro" style="margin-top:-4px")
     label.cp ENDEREÇO
@@ -64,7 +61,7 @@ async function cep() {
       .col(style="width:70%")
         label.cp COMPLEMENTO
         input(v-model="app.pedido.comp" placeholder="Complemento")
-  button.fechar(v-if="app.pedido.cpf && app.pedido.cpf.length && app.pedido.logradouro" @click="update(forma)")
+  button.fechar(v-if="app.pedido.cpf && app.pedido.cpf.length && app.pedido.logradouro" @click="send({e:'cliente', m:app.pedido})")
     i.fa.fa-circle-down
     | CONTINUAR
 </template>
@@ -72,6 +69,9 @@ async function cep() {
 <style lang="sass" scoped>
 $g: #00FF7F
 .Pedido
+  input
+    font-size: 16px
+    font-weight: bold
   .cep
     margin-left: 6px
     margin-bottom: -20px

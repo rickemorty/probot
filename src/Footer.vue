@@ -3,19 +3,21 @@ import Categoria from './comp/Categoria.vue'
 import Produto from './comp/Produto.vue'
 import Pedido from './comp/Pedido.vue'
 import Cartao from './comp/Cartao.vue'
-import { inject, ref } from 'vue'
-var { app, chat, send, update, categorias, oi } = inject('shopbot')
+import { inject, ref, onUpdated } from 'vue'
+var { app, chat, send, update, categorias, oi, pagamento } = inject('shopbot')
 var msg = ref("")
-
+onUpdated(() => {
+  let txt = document.getElementById('txt')
+  if (app.value.input.txt && txt) setTimeout(txt.focus, 800)
+})
 const categoria = { nome: "", foto: [], desc: "", ativo: true }
 const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
-const gerando = { m: 'Obrigada, estou gerando os dados para pagamento, um instante...' }
 
 const mid = { //{ e, o, v }
   oi: oi,
   login: () => update({
-    m: `Informe o seu <b>E-mail</b>:`, cb: (e) => update({
-      m: `Confirme a <b>Senha</b> por gentileza.`, h: true,
+    m: `Informe o seu <b>E-mail</b>:`, txt: true, cb: (e) => update({
+      m: `Confirme a <b>Senha</b> por gentileza.`, txt: true, h: true,
       cb: (s) => send({ e: 'login', m: { email: e, senha: s } })
     })
   }),
@@ -25,9 +27,9 @@ const mid = { //{ e, o, v }
   produto: ({ v }) => app.value.input = { produto: v || produto },
   txt: (m) => app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) },
   concluir: () => app.value.input = { pedido: true },
-  forma: ({ o, v }) => { app.value.pedido.forma = v || o; update(gerando); app.value.input = {};let p = {...app.value.pedido}; p.cpf = p.cpf.replace(/[^0-9]/g, ''); send({ e: 'pedido', pedido: app.value.pedido }) },
+  pix: () => { app.value.pedido.forma = 'PIX'; pagamento() },
   copiar: ({ v }) => { update({ m: 'Código Pix copiado.' }); navigator.clipboard.writeText(v) },
-  cartao: () => app.value.input = { cartao: true }
+  cartao: () => { app.value.pedido.cartao = { nome: '', n: '', mes: '', ano: '', ccv: '' }; app.value.input = { cartao: true } }
 }
 
 function option(m) {
@@ -54,21 +56,23 @@ function txt(e) {
 
 <template lang="pug" scoped>
 .Footer
-    .inputs
-        //Form(v-if="app.input.form") 
-        Categoria.in(v-if="app.input.categoria" :c="app.input.categoria" :e="true") 
-        Produto.in(v-if="app.input.produto" :p="app.input.produto" :e="true") 
-        .select.in.sh.border.bw(v-if="app.input.select" :class="app.talk && 'out'")
-            .tipo.fb(v-if="app.input.n") {{app.input.n}}
-            .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
-        .txt.in.row.ac.sh(v-if="app.input.txt")
-            textarea(v-model="msg" @keydown.enter="txt" placeholder="Mensagem")
-            //button.short.fa.fa-floppy-disk(@click="save" title="SALVAR")
-            button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
-        Pedido.in(v-if="app.input.pedido")
-        Cartao.in(v-if="app.input.cartao")
-    .probox.tc.fb
-        a(href="https://probox.app" target="_blank") © PROBOX
+  .inputs
+    //Form(v-if="app.input.form") 
+    Categoria.in(v-if="app.input.categoria" :c="app.input.categoria" :e="true") 
+    Produto.in(v-if="app.input.produto" :p="app.input.produto" :e="true") 
+    .select.in.sh.border.bw(v-if="app.input.select" :class="app.talk && 'out'")
+        .tipo.fb(v-if="app.input.n") {{app.input.n}}
+        .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
+    .txt.in.row.ac.sh(v-if="app.input.txt")
+        textarea(v-model="msg" @keydown.enter="txt" id="txt" placeholder="Mensagem")
+        //button.short.fa.fa-floppy-disk(@click="save" title="SALVAR")
+        button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
+    Pedido.in(v-if="app.input.pedido")
+    Cartao.in(v-if="app.input.cartao")
+  .probox.tc.fb
+    a(href="https://probox.app" target="_blank") 
+      i.fa.fa-lock
+      |  AMBIENTE SEGURO - PROBOX
 </template>
 
 <style lang="sass" scoped>

@@ -1,11 +1,12 @@
 # shopbot
-Integração assas
-Pix ok, 
-fazer cartão de credito
-Guardar os dados do pedido
+
+validar cpf
+Integração assas, falta receber webhook pix para confirar pagamento.
 notificar pedido wzp
-pedidos do admin
+admin (Pedido, clientes, lixeira)
 hostinger vps com coolify
+
+nao utilize chats chatos
 
 # ARGUMENTOS
 

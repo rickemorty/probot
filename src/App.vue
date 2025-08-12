@@ -23,11 +23,15 @@ var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
 
 const update = (m) => {
+  if (m.push) {
+
+  }
   if (m.categorias) { categorias.value = m.categorias; return }
   app.value.talk = true
   if (m.style) {
     document.head.innerHTML += `<style>:root {${m.style}}</style>`;
     app.value = { ...app.value, ...m }
+    setTimeout(initPush,1000)
   }
   if (m.cb) m.cb = eval(m.cb)
   setTimeout(() => {
@@ -36,7 +40,7 @@ const update = (m) => {
       m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), i * 300))
     }
     if (m.a) { app.value.a = true; m.select = [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
-    if (!m.select) m.txt = true
+    //if (!m.select) m.txt = true
     app.value.input = m
     app.value.talk = false
   }, 400)
@@ -49,17 +53,36 @@ function WS() {
   ws.onopen = async () => send({ e: 'load' })
   ws.onerror = (e) => console.error(e);
   ws.onmessage = ({ data }) => {
-    load.value = false
-    //console.log(data);
-    let m = JSON.parse(data)
-    console.log(m);
-    update(m)
+    try {
+      load.value = false
+      let m = JSON.parse(data)
+      console.log(m);
+      update(m)
+    } catch (e) {
+      console.log(data);
+    }
   }
 }
 const admin = () => app.value.input = { select: [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
-provide('shopbot', { app, send, chat, update, categorias: categorias, admin, oi: () => update({ select: app.value.select }) })
+const pagamento = () => { update({ m: 'Obrigada, estou gerando os dados de pagamento, um instante...' }); app.value.input = {}; send({ e: 'pedido', pedido: app.value.pedido }) }
+provide('shopbot', { app, send, chat, update, categorias: categorias, admin, pagamento: pagamento, oi: () => update({ select: app.value.select }) })
 WS()
 
+async function initPush() {
+  const register = await navigator.serviceWorker.register('/worker.js', { scope: '/' });
+  const subscription = await register.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array(app.value.pushkey)
+  });
+  if (subscription) send({ e: 'sub', subscription })
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = atob(base64);
+  return Uint8Array.from([...rawData].map(char => char.charCodeAt(0)));
+}
 </script>
 
 <template lang="pug">
@@ -159,6 +182,7 @@ body
     background: white  
     overflow: hidden       
     animation: lgrow .5s
+    border: 1px solid #ccc 
     .tipo
       margin-bottom: 20px
       border-bottom: 1px solid #ddd
