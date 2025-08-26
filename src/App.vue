@@ -23,15 +23,12 @@ var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
 
 const update = (m) => {
-  if (m.push) {
-
-  }
   if (m.categorias) { categorias.value = m.categorias; return }
   app.value.talk = true
   if (m.style) {
     document.head.innerHTML += `<style>:root {${m.style}}</style>`;
     app.value = { ...app.value, ...m }
-    setTimeout(initPush,1000)
+    setTimeout(initPush, 1000)
   }
   if (m.cb) m.cb = eval(m.cb)
   setTimeout(() => {
@@ -39,8 +36,8 @@ const update = (m) => {
       if (typeof m.m === 'string') m.m = [m.m]
       m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), i * 300))
     }
-    if (m.a) { app.value.a = true; m.select = [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
-    //if (!m.select) m.txt = true
+    if (m.s) chat.value.push({ s: m.s })
+    if (m.a) { app.value.a = true; m.select = [{ e: 'pedidos', o: 'Pedidos' }, { e: 'clientes', o: 'Clientes' }, { e: 'oproduto', o: "Produtos" }, { e: 'ocategoria', o: 'Categorias' }] }
     app.value.input = m
     app.value.talk = false
   }, 400)
@@ -112,9 +109,7 @@ body
   *
     transition: all 250ms
   button
-    cursor: pointer    
-  label
-    color: #444
+    cursor: pointer   
   input:focus, textarea:focus
     outline: none
   .container
@@ -182,27 +177,12 @@ body
     background: white  
     overflow: hidden       
     animation: lgrow .5s
-    border: 1px solid #ccc 
-    .tipo
+    border: 1px solid #ccc
+    .campo
       margin-bottom: 20px
-      border-bottom: 1px solid #ddd
-      .fa-trash
-        padding: 2px
-        &:hover
-          color: $r
-  .tipo
-    padding: 8px 10px
-    font-size: 13px
-    color: #eee
-    background: var(--main)
-    text-transform: uppercase
-    font-weight: bold
-    opacity: .7
-  .campo
-    margin-bottom: 20px
-    padding: 2px 16px
-    &:hover label
-      color: var(--main)
+      padding: 2px 16px
+      &:hover label
+        color: var(--main)
     select
       border-radius: 6px
     input,textarea, select
@@ -230,6 +210,7 @@ body
     width: 100% 
     height: 300px
   .fechar
+    background: rgba($gr,.6)
     font-weight: bold
     width: 100%
     border: none

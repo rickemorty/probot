@@ -3,17 +3,16 @@ let { e, c } = defineProps(['e', 'c'])
 import Chave from './Chave.vue'
 import Foto from './Foto.vue'
 import { inject, reactive, ref } from 'vue'
-var { app, send, chat, admin } = inject('shopbot')
+var { app, send, chat } = inject('shopbot')
 var categoria = reactive(c)
 
 function fechar() {
   out.value = true
-  if (categoria._id || (categoria.nome.length)) {
+  if (JSON.stringify(categoria) != JSON.stringify(c)) {
     send({ e: "up", c: categoria })
-    chat.value.push({ user: app.value.client, m: `Atualize a categoria: <b>${categoria.nome}.</b>` })
-    setTimeout(() => { app.value.input = {}; out.value = false }, 300)
-    setTimeout(() => chat.value.push({ m: `Atualizando <b>${categoria.nome}</b>...` }), 300)
+    chat.value.push({ m: `Atualizando <b>${categoria.nome}</b>...` })
   }
+  setTimeout(() => { app.value.input = {}; out.value = false }, 300)
 }
 var out = ref(false)
 function del() {

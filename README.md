@@ -1,10 +1,9 @@
 # shopbot
 
-validar cpf
-Integração assas, falta receber webhook pix para confirar pagamento.
-notificar pedido wzp
 admin (Pedido, clientes, lixeira)
 hostinger vps com coolify
+Integração assas, falta receber webhook pix para confirar pagamento.
+notificar pedido wzp
 
 nao utilize chats chatos
 

@@ -1,17 +1,18 @@
 <script setup>
-let { e, p } = defineProps(['e', 'p'])
+let { e, z } = defineProps(['e', 'z'])
 import Chave from './Chave.vue'
 import Foto from './Foto.vue'
+import Titulo from './Titulo.vue'
 import { inject, reactive, ref } from 'vue'
 var { app, send, chat, admin, categorias, oi } = inject('shopbot')
 send({ e: 'categorias', l: true })
-var produto = reactive(p)
-if (!app.value.a){
+var produto = reactive(z)
+if (!app.value.a) {
   let pedido = app.value.pedido.produtos.filter(p => p._id == produto._id)
-  if(pedido.length == 0) produto.qtd = 0
+  if (pedido.length == 0) produto.qtd = 0
   else produto.qtd = pedido[0].qtd
 
-} 
+}
 const abrir = () => { if (!e) { app.value.input = { produto: produto } } }
 function fechar() {
   out.value = true
@@ -45,8 +46,7 @@ var out = ref(false)
 
 <template lang="pug">
 .Produto.input.border.bw(@click="abrir" :class="`${out && 'out'} ${e ?'sh': 'fechado pt'}`")
-  .tipo.row.js.ac(v-if="e") Produto
-    i.fa.fa-trash.pt(v-if=" app.a && produto._id" @click="del" title="EXCLUIR")
+  Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false}")
   .campo.col(v-if="e && app.a")
     label CATEGORIA
     select.pt(v-model="produto.categoria")
