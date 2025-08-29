@@ -9,8 +9,8 @@ let { z } = defineProps(['z'])
 </template>
 
 <style lang="sass" scoped>
-$g: #00FF7F
 .Titulo
+  margin-bottom: 14px
   border-bottom: 1px solid #ddd
   padding: 8px 10px
   font-size: 13px
@@ -23,5 +23,4 @@ $g: #00FF7F
     padding: 2px
     &:hover
       color: #fd5755
-
 </style>

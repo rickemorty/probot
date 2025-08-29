@@ -21,7 +21,7 @@ var ws = reactive({});
 var load = ref(true)
 var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
-
+const opt = [{ e: 'pedidos', o: 'Pedidos' }, { e: 'ocliente', o: 'Clientes' }, { e: 'oproduto', o: "Produtos" }, { e: 'ocategoria', o: 'Categorias' }]
 const update = (m) => {
   if (m.categorias) { categorias.value = m.categorias; return }
   app.value.talk = true
@@ -37,7 +37,7 @@ const update = (m) => {
       m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), i * 300))
     }
     if (m.s) chat.value.push({ s: m.s })
-    if (m.a) { app.value.a = true; m.select = [{ e: 'pedidos', o: 'Pedidos' }, { e: 'clientes', o: 'Clientes' }, { e: 'oproduto', o: "Produtos" }, { e: 'ocategoria', o: 'Categorias' }] }
+    if (m.a) { app.value.a = true; m.select = opt }
     app.value.input = m
     app.value.talk = false
   }, 400)
@@ -60,9 +60,15 @@ function WS() {
     }
   }
 }
-const admin = () => app.value.input = { select: [{ e: 'ocategoria', o: 'Categorias' }, { e: 'oproduto', o: "Produtos" }] }
+const login = () => update({
+  m: `Informe o seu <b>E-mail</b>:`, txt: true, cb: (e) => update({
+    m: `Confirme a <b>Senha</b> por gentileza.`, txt: true, h: true,
+    cb: (s) => send({ e: 'login', m: { email: e, senha: s } })
+  })
+});
+const admin = () => app.value.input = { select: opt }
 const pagamento = () => { update({ m: 'Obrigada, estou gerando os dados de pagamento, um instante...' }); app.value.input = {}; send({ e: 'pedido', pedido: app.value.pedido }) }
-provide('shopbot', { app, send, chat, update, categorias: categorias, admin, pagamento: pagamento, oi: () => update({ select: app.value.select }) })
+provide('shopbot', { app, send, chat, update, categorias: categorias, admin, login, pagamento: pagamento, oi: () => update({ select: app.value.select }) })
 WS()
 
 async function initPush() {

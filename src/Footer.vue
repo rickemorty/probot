@@ -6,7 +6,7 @@ import Cartao from './comp/Cartao.vue'
 import Cliente from './comp/Cliente.vue'
 import Select from './comp/Select.vue'
 import { inject, ref, onUpdated } from 'vue'
-var { app, chat, send, update } = inject('shopbot')
+var { app, chat, send, login } = inject('shopbot')
 var msg = ref("")
 onUpdated(() => {
   let e = false
@@ -17,8 +17,6 @@ onUpdated(() => {
     if (h) setTimeout(() => h.focus(), 800)
   }
 })
-const categoria = { nome: "", foto: [], desc: "", ativo: true }
-const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
 
 function txt(e) {
   e.preventDefault();
@@ -26,12 +24,7 @@ function txt(e) {
   if (app.value.input.h) m = '******'
   chat.value.push({ user: app.value.client, m: m })
   if (msg.value.toLowerCase() == 'admin') {
-    update({
-      m: `Informe o seu <b>E-mail</b>:`, txt: true, cb: (e) => update({
-        m: `Confirme a <b>Senha</b> por gentileza.`, txt: true, h: true,
-        cb: (s) => send({ e: 'login', m: { email: e, senha: s } })
-      })
-    }); 
+    login()
     msg.value = ''; 
     return
   }
@@ -54,7 +47,7 @@ function txt(e) {
     Select.in(v-if="app.input.select")
     Pedido.in(v-if="app.input.pedido")
     Cartao.in(v-if="app.input.cartao")
-    Cliente.in.input(v-if="app.input.cliente" :z="app.input.cliente")
+    Cliente.in.input(v-if="app.input.cliente" :z="app.input.cliente" :e="true")
   .probox.tc.fb
     a(href="https://probox.app" target="_blank") 
       i.fa.fa-lock

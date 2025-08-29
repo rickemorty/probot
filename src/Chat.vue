@@ -17,8 +17,8 @@ watch(chat.value, () => {
   .msg(v-for="c,i in chat" :class="`${c.user && c.user==app.client ? 'right col ae':'left'}`")
     .n.fb(v-if="i==0 || (nome(chat[i-1])!=nome(c))") {{nome(c)}}
     .m(v-if="c.m" v-html="br(c.m)")
-    .row(v-if="c.s")
-      template(v-for="z in c.s")
+    .row.list(v-if="c.s")
+      template(v-for="z in app.input.search && app.input.search.length?c.s.filter(m=>JSON.stringify(m).toLowerCase().includes(app.input.search)):c.s")
         Produto.m(v-if="z.preco" :z="z")
         Cliente.m(v-if="z.cpf" :z="z")
 </template>
@@ -30,6 +30,12 @@ watch(chat.value, () => {
   padding-bottom: 40px
   overflow-x: hidden
   overflow-y: auto
+  .list
+    padding-top: 10px
+    padding-bottom: 30px
+    overflow: auto
+    .Cliente, .Produto
+      margin-right: 12px
   .msg
     margin: 0 12px
     margin-bottom: 6px

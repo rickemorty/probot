@@ -1,14 +1,22 @@
 <script setup>
 import Titulo from './Titulo.vue'
-import { inject, ref, onUpdated } from 'vue'
-var { app, chat, send, update, oi, pagamento } = inject('shopbot')
+import { inject, ref } from 'vue'
+var { app, chat, send, update, oi, pagamento, login } = inject('shopbot')
+var titulo = ref((app.input && app.input.n) || 'Selecione')
+const categoria = { nome: "", foto: [], desc: "", ativo: true }
+const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
+const cliente = { cpf: "", nome: "", email: "", fone: [''], endereco: [{ cep: '', logradouro: '', n: '', comp: '', bairro: '', cidade: '', uf: '' }] }
+
 
 const mid = { //{ e, o, v }
   oi: oi,
+  login: login,
   ocategoria: () => setTimeout(() => app.value.input = { n: 'CATEGORIA', select: [{ e: 'categoria', o: 'Nova' }, { e: 'categorias', o: 'Editar' }] }, 300),
   oproduto: () => setTimeout(() => app.value.input = { n: 'PRODUTO', select: [{ e: 'produto', o: 'Novo' }, { e: 'categorias', v: 'p', o: 'Editar' }] }, 300),
+  ocliente: () => setTimeout(() => app.value.input = { n: 'CLIENTE', select: [{ e: 'cliente', o: 'Novo' }, { e: 'clientes', o: 'Editar' }] }, 300),
   categoria: ({ v }) => app.value.input = { categoria: v || categoria },
   produto: ({ v }) => app.value.input = { produto: v || produto },
+  cliente: ({ v }) => app.value.input = { cliente: v || cliente },
   txt: (m) => app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) },
   concluir: () => app.value.input = { pedido: true },
   pix: () => { app.value.pedido.forma = 'PIX'; pagamento() },
@@ -35,6 +43,8 @@ function option(m) {
 <style lang="sass" scoped>
 $g: #00FF7F
 .Select
+  .Titulo
+    margin-bottom: 0
   .o
     padding: 18px 12px
     border-top: 1px solid #ddd

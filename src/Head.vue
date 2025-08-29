@@ -16,7 +16,8 @@ const sacola = () => {
 		.status.cg {{app.talk?'Escrevendo...':'Online'}}
 	//i.fullicon.pt.fa-solid.fa-up-right-and-down-left-from-center(title="TELA CHEIA")
 	button(v-if="app.pedido.produtos.length" @click="sacola") CONCLUIR
-	.sacola.pt.tc.fb(@click="sacola" title="SACOLA") {{app.pedido.produtos.length}}
+	b.cw(v-if="app.a") ADMIN
+	.sacola.pt.tc.fb(v-else @click="sacola" title="SACOLA") {{app.pedido.produtos.length}}
 </template>
 
 <style lang="sass" scoped>

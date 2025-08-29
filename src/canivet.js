@@ -1,2 +1,4 @@
-export const fone = (v="") => v.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d{5})(\d{4})$/, "$1-$2")
-export const cpf = (v="") => v.replace(/\D/g, "").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+export const fone = (v = "") => v.replace(/\D/g, "").replace(/^(\d{2})(\d)/g, "($1) $2").replace(/(\d{5})(\d{4})$/, "$1-$2")
+export const cpf = (v = "") => v.replace(/\D/g, "").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d)/, "$1.$2").replace(/(\d{3})(\d{1,2})$/, "$1-$2")
+export const cep = (v = []) => v.slice(0, 8).replace(/(\d{2})(\d)/, '$1.$2').replace(/(\d{3})(\d)/, '$1-$2')
+export const dh = (v = "") => new Date(v).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo" }).slice(0, -3)
