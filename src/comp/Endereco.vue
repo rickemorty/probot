@@ -18,7 +18,6 @@ async function valid() {
       const data = await response.json()
       if (data.erro) {
         invalid.value = true
-        chat.value.push({ m: '<b class="cr">CEP não encontrado.</b>' });
         return
       }
       z.logradouro = data.logradouro
@@ -26,7 +25,6 @@ async function valid() {
       z.bairro = data.bairro
       z.uf = data.uf
     } catch (e) {
-      chat.value.push({ m: '<b class="cr">Erro ao consultar o CEP. Tente novamente.</b>' });
       console.error(e);
     }
   }
@@ -43,7 +41,7 @@ async function valid() {
   .col(v-if="z.logradouro")
     label.cp ENDEREÇO
     b {{z.logradouro}} - {{z.bairro}} - {{z.cidade}}/{{z.uf}}
-  .row.fb(v-if="z.logradouro" style="margin-top:12 px")
+  .row.fb(v-if="z.logradouro" style="margin-top:10px")
     .col(style="width:30%")
       label.cp NÚMERO
       input(type="number" v-model="z.n" placeholder="N°")

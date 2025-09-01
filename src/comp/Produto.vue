@@ -3,7 +3,7 @@ let { e, z } = defineProps(['e', 'z'])
 import Chave from './Chave.vue'
 import Foto from './Foto.vue'
 import Titulo from './Titulo.vue'
-import { inject, reactive, ref } from 'vue'
+import { inject, reactive } from 'vue'
 var { app, send, chat, admin, categorias, oi } = inject('shopbot')
 send({ e: 'categorias', l: true })
 var produto = reactive(z)
@@ -15,7 +15,7 @@ if (!app.value.a) {
 }
 const abrir = () => { if (!e) { app.value.input = { produto: produto } } }
 function fechar() {
-  out.value = true
+  app.value.down()
   if (app.value.a) {
     if (produto.nome) {
       send({ e: 'up', p: produto })
@@ -32,7 +32,6 @@ function fechar() {
   }
 
   oi()
-  setTimeout(() => out.value = false, 385)
 }
 function del() {
   if (confirm(`Deseja excluir ${produto.nome}?`)) {
@@ -40,12 +39,10 @@ function del() {
     chat.value.push({ user: app.value.client, m: `Excluir <b>${produto.nome}</b>.` })
   }
 }
-var out = ref(false)
-
 </script>
 
 <template lang="pug">
-.Produto.input.border.bw(@click="abrir" :class="`${out && 'out'} ${e ?'sh': 'fechado pt'}`")
+.Produto(@click="abrir" :class="`${e ?'sh': 'fechado pt'}`")
   Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false}")
   .campo.col(v-if="e && app.a")
     label CATEGORIA

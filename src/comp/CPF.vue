@@ -1,8 +1,7 @@
 <script setup>
 let { z } = defineProps(['z'])
 import {cpf} from '../canivet'
-/* console.log(z);
-z.cpf = cpf(z) */
+z.cpf = cpf(z.cpf) 
 import { ref } from 'vue'
 var icpf = ref(false)
 

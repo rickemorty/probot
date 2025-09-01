@@ -24,7 +24,7 @@ function del() {
 </script>
 
 <template lang="pug">
-.Categoria.input.sh.border.bw(:class="`${out && 'out'}`")
+.Categoria(:class="`${out && 'out'}`")
   .tipo.row.js.ac(v-if="e") Categoria
     i.fa.fa-trash.pt(v-if="categoria._id" @click="del" title="EXCLUIR")
   .campo.col

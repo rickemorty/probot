@@ -1,5 +1,5 @@
 # shopbot
-
+Pedido nao esta enviando m:app.pedido.
 admin (Pedido, clientes, lixeira)
 hostinger vps com coolify
 Integração assas, falta receber webhook pix para confirar pagamento.

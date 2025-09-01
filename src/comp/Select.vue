@@ -1,12 +1,11 @@
 <script setup>
 import Titulo from './Titulo.vue'
 import { inject, ref } from 'vue'
-var { app, chat, send, update, oi, pagamento, login } = inject('shopbot')
+var { app, chat, send, oi, pagamento, login } = inject('shopbot')
 var titulo = ref((app.input && app.input.n) || 'Selecione')
 const categoria = { nome: "", foto: [], desc: "", ativo: true }
 const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
 const cliente = { cpf: "", nome: "", email: "", fone: [''], endereco: [{ cep: '', logradouro: '', n: '', comp: '', bairro: '', cidade: '', uf: '' }] }
-
 
 const mid = { //{ e, o, v }
   oi: oi,
@@ -19,23 +18,25 @@ const mid = { //{ e, o, v }
   cliente: ({ v }) => app.value.input = { cliente: v || cliente },
   txt: (m) => app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) },
   concluir: () => app.value.input = { pedido: true },
+  forma: () => app.value.forma,
   pix: () => { app.value.pedido.forma = 'PIX'; pagamento() },
-  copiar: ({ v }) => { update({ m: 'Código Pix copiado.' }); navigator.clipboard.writeText(v) },
-  cartao: () => { app.value.pedido.cartao = { nome: '', n: '', mes: '', ano: '', ccv: '' }; app.value.input = { cartao: true } }
+  copiar: ({ v }) => { chat.value.push({ m: 'Código Pix copiado.' }); navigator.clipboard.writeText(v) },
+  cartao: () => { app.value.pedido.cartao = { nome: '', n: '', mes: '', ano: '', ccv: '' }; setTimeout(() => app.value.input = { cartao: true }, 500) }
 }
 
 function option(m) {
-  app.value.input = {}
+  app.value.down()
   chat.value.push({ user: app.value.client, m: m.o })
   if (m.e) {
     if (mid[m.e]) mid[m.e](m)
     else send({ e: m.e, o: m.v || m.o })
   }
+
 }
 </script>
 
 <template lang="pug">
-.Select.input.sh.border.bw
+.Select
   Titulo(:z="{n:'Selecione'}")
   .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
 </template>

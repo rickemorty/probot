@@ -9,15 +9,15 @@ import CPF from './CPF.vue'
 import Endereco from './Endereco.vue'
 
 cliente.fone.map((f, i) => cliente.fone[i] = fone(f))
+const abrir = () => { if (!e) { app.value.input = { cliente: cliente } } }
 function fechar() {
-  out.value = true
+  app.value.down()
   if (JSON.stringify(cliente) != JSON.stringify(z)) {
     send({ e: "up", ce: cliente })
     chat.value.push({ m: `Atualizando <b>${cliente.nome}</b>...` })
   }
-  setTimeout(() => { out.value = false; admin() }, 300)
+  if (app.value.a) setTimeout(admin, 300)
 }
-var out = ref(false)
 function del() {
   if (confirm(`Deseja excluir o cliente ${cliente.nome}?`)) {
     send({ e: 'del', c: cliente })
@@ -27,8 +27,8 @@ function del() {
 </script>
 
 <template lang="pug">
-.Cliente.sh.border.bw(@click="app.input = {cliente:cliente}" :class="`${out && 'out'} ${!e && 'pt'}`")
-  Titulo(v-if="e" :z="{n:'cliente',del:del}")
+.Cliente.border.bw(@click="abrir" :class="`${!e && 'pt'}`")
+  Titulo(v-if="e && app.a" :z="{n:'cliente',del:z._id?del:false}")
   .campo.col
     label NOME
     input(v-if="e" v-model="cliente.nome" placeholder="Nome")
@@ -43,19 +43,19 @@ function del() {
         template(v-for="f,i in cliente.fone")
           input(v-if="e" v-mask="'fone'" v-model="cliente.fone[i]" placeholder="Fone")
           b(v-else) {{f}}
-  .campo.col(v-if="e && cliente.email.length")
+  .campo.col(v-if="e && cliente.email")
     label E-MAIL
     input(v-model="cliente.email" placeholder="E-mail")
   .campo.col(v-if="e" v-for="f,i in cliente.endereco")
     Endereco(:z="cliente.endereco[i]")
-  .campo.row(v-if="app.a")
+  .campo.row(v-if="app.a && e")
     .col(v-if="cliente.criado")
       label CRIADO
       b {{dh(cliente.criado)}}
     .col(v-if="cliente.atualizado")
       label ATUALIZADO
       b {{dh(cliente.atualizado)}}
-  button.fechar(v-if="app.a" @click="fechar") 
+  button.fechar(v-if="app.a && e" @click="fechar") 
     i.fa.fa-circle-down
     | FECHAR
 </template>

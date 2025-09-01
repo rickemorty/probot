@@ -22,6 +22,7 @@ var load = ref(true)
 var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
 const opt = [{ e: 'pedidos', o: 'Pedidos' }, { e: 'ocliente', o: 'Clientes' }, { e: 'oproduto', o: "Produtos" }, { e: 'ocategoria', o: 'Categorias' }]
+const oi = () => update({ select: app.value.select })
 const update = (m) => {
   if (m.categorias) { categorias.value = m.categorias; return }
   app.value.talk = true
@@ -31,6 +32,7 @@ const update = (m) => {
     setTimeout(initPush, 1000)
   }
   if (m.cb) m.cb = eval(m.cb)
+  if (m.reset) { app.value.pedido.produtos = []; oi() }
   setTimeout(() => {
     if (m.m) {
       if (typeof m.m === 'string') m.m = [m.m]
@@ -38,12 +40,12 @@ const update = (m) => {
     }
     if (m.s) chat.value.push({ s: m.s })
     if (m.a) { app.value.a = true; m.select = opt }
-    app.value.input = m
-    app.value.talk = false
+    setTimeout(() => { app.value.input = m; app.value.talk = false }, (m.m ? m.m.length + 1 : 1) * 300)
+
   }, 400)
 }
 
-var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { produtos: [] }, })
+var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, out: false, down: () => { app.value.out = true; setTimeout(() => { app.value.input = {}; app.value.out = false }, 400) }, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { nome: "", cpf: "", endereco: [{ cep: '' }], fone: [''], produtos: [] }, })
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
   ws.onclose = () => setTimeout(WS(), Math.floor(3000 + Math.random() * 7000))
@@ -56,7 +58,8 @@ function WS() {
       console.log(m);
       update(m)
     } catch (e) {
-      console.log(data);
+      console.error(e);
+      console.error(data);
     }
   }
 }
@@ -67,8 +70,8 @@ const login = () => update({
   })
 });
 const admin = () => app.value.input = { select: opt }
-const pagamento = () => { update({ m: 'Obrigada, estou gerando os dados de pagamento, um instante...' }); app.value.input = {}; send({ e: 'pedido', pedido: app.value.pedido }) }
-provide('shopbot', { app, send, chat, update, categorias: categorias, admin, login, pagamento: pagamento, oi: () => update({ select: app.value.select }) })
+const pagamento = () => { update({ m: 'Legal, vou gerar os dados de pagamento, um instante...' });send({ e: 'pedido', pedido: app.value.pedido }) }
+provide('shopbot', { app, send, chat, update, categorias: categorias, admin, login, pagamento: pagamento, oi: oi })
 WS()
 
 async function initPush() {
@@ -295,23 +298,23 @@ body
   .in
       animation: in .4s
   .out
-      animation: out .4s
+    animation: out .4s
   @keyframes in 
-      0%
-          margin-bottom: -500px
-      100%
-          margin-bottom: 0px
+    0%
+        margin-bottom: -500px
+    100%
+        margin-bottom: 0px
   @keyframes out
-      100%
-          margin-bottom: -700px  
+    100%
+      margin-bottom: -700px  
   @keyframes lgrow 
-      0%
-          margin-left: -100%
-      100%
-          margin-left:  0px
+    0%
+      margin-left: -100%
+    100%
+      margin-left:  0px0
   @keyframes rgrow 
-      0%
-          margin-right: -100%
-      100%
-          margin-right:  0px 
+    0%
+        margin-right: -100%
+    100%
+        margin-right:  0px 
 </style>

@@ -1,5 +1,5 @@
 <script setup>
-import { inject, ref, watch } from 'vue'
+import { inject, watch } from 'vue'
 var { chat, app } = inject('shopbot')
 import Produto from './comp/Produto.vue'
 import Cliente from './comp/Cliente.vue'
@@ -8,7 +8,7 @@ const br = (m) => typeof m == 'string' ? m.replace(/\n/g, '<br/>') : m
 
 watch(chat.value, () => {
   let ct = document.querySelector('#shopbot .Chat')
-  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 1000, 500)
+  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 1000, 800)
 })
 </script>
 
@@ -27,7 +27,7 @@ watch(chat.value, () => {
 .Chat
   flex: 1
   padding: 20px 4px
-  padding-bottom: 40px
+  padding-bottom: 80px
   overflow-x: hidden
   overflow-y: auto
   .list

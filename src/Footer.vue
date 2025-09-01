@@ -25,7 +25,7 @@ function txt(e) {
   chat.value.push({ user: app.value.client, m: m })
   if (msg.value.toLowerCase() == 'admin') {
     login()
-    msg.value = ''; 
+    msg.value = '';
     return
   }
   if (app.value.input.cb) app.value.input.cb(msg.value)
@@ -37,17 +37,17 @@ function txt(e) {
 
 <template lang="pug" scoped>
 .Footer
-  .inputs.col
+  .inputs.col(:class="`${app.out && 'out'}`")
     .txt.in.row.ac.sh(v-if="app.input.txt")
       textarea(v-model="msg" @keydown.enter="txt" id="txt" placeholder="Mensagem")
       button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
-    input.s(v-if="app.input.s" v-model="app.input.search" placeholder="Procurar" id="search")
-    Categoria.in(v-if="app.input.categoria" :z="app.input.categoria" :e="true") 
-    Produto.in(v-if="app.input.produto" :z="app.input.produto" :e="true")
-    Select.in(v-if="app.input.select")
-    Pedido.in(v-if="app.input.pedido")
-    Cartao.in(v-if="app.input.cartao")
-    Cliente.in.input(v-if="app.input.cliente" :z="app.input.cliente" :e="true")
+    input.s.in(v-if="app.input.s" v-model="app.input.search" placeholder="Procurar" id="search")
+    Categoria.in.input.border.bw.sh(v-if="app.input.categoria" :z="app.input.categoria" :e="true") 
+    Produto.in.input.border.bw.sh(v-if="app.input.produto" :z="app.input.produto" :e="true")
+    Select.in.input.sh.border.bw(v-if="app.input.select")
+    Pedido.in.input.border.bw.sh(v-if="app.input.pedido")
+    Cartao.in.input.border.bw.sh(v-if="app.input.cartao")
+    Cliente.in.input.border.bw.sh(v-if="app.input.cliente" :z="app.input.cliente" :e="true")
   .probox.tc.fb
     a(href="https://probox.app" target="_blank") 
       i.fa.fa-lock

@@ -1,12 +1,12 @@
 <script setup>
-import { inject } from 'vue'
-var { app, pagamento } = inject('shopbot')
+import { inject, ref } from 'vue'
+var { app, pagamento, update } = inject('shopbot')
+import Titulo from './Titulo.vue'
 </script>
 
 <template lang="pug">
-.Cartao.input.border.bw
-  .tipo.row.js.ac CARTÃO DE CRÉDITO
-    i.fa.fa-times.pt(@click="app.input={txt:true}" title="FECHAR")
+.Cartao
+  Titulo(:z="{n:'CARTÃO DE CRÉDITO',fechar:()=>{update(app.forma); app.down()}}")
   .campo.col
     label NOME 
     input(v-model="app.pedido.cartao.nome" placeholder="Igual ao do cartão.")
@@ -22,7 +22,7 @@ var { app, pagamento } = inject('shopbot')
     .col(style="width: 120px")
       label CCV
       input(v-model="app.pedido.cartao.ccv" type="number" maxlength="3" placeholder="000")
-  button.fechar(v-if="app.pedido.cartao.n && app.pedido.cartao.nome && app.pedido.cartao.ccv && app.pedido.cartao.mes && app.pedido.cartao.ano" @click="app.pedido.forma='cartao';pagamento()")
+  button.fechar(v-if="app.pedido.cartao.n && app.pedido.cartao.nome && app.pedido.cartao.ccv && app.pedido.cartao.mes && app.pedido.cartao.ano" @click="app.down();app.pedido.forma='cartao';pagamento()")
     i.fa.fa-circle-down
     | CONTINUAR
 </template>

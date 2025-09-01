@@ -1,10 +1,15 @@
 <script setup>
-import { inject, ref } from 'vue'
-var { app, talk, chat, update } = inject('shopbot')
+import { inject } from 'vue'
+var { app, chat, update } = inject('shopbot')
 const sacola = () => {
-	let n = app.value.pedido.produtos.length
-	if (!n) chat.value.push({ m: "Seu pedido não possui <b>nenhum produto.</b>" })
-	else update({ m: [`<b>O seu pedido possui:</b>.`, ...app.value.pedido.produtos], pedido: true })
+  let n = app.value.pedido.produtos.length
+  if (!n) chat.value.push({ m: "Seu pedido não possui <b>nenhum produto.</b>" })
+  else {
+    chat.value.push({ m: "<b>O seu pedido possui:</b>" })
+    update({ s: app.value.pedido.produtos })
+    update({ pedido: true })
+
+  }
 }
 </script>
 
