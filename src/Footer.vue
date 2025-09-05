@@ -2,11 +2,12 @@
 import Categoria from './comp/Categoria.vue'
 import Produto from './comp/Produto.vue'
 import Pedido from './comp/Pedido.vue'
+import Apedido from './comp/PedidoAdmin.vue'
 import Cartao from './comp/Cartao.vue'
 import Cliente from './comp/Cliente.vue'
 import Select from './comp/Select.vue'
 import { inject, ref, onUpdated } from 'vue'
-var { app, chat, send, login } = inject('shopbot')
+var { app, chat, send, login } = inject('lilo')
 var msg = ref("")
 onUpdated(() => {
   let e = false
@@ -41,13 +42,14 @@ function txt(e) {
     .txt.in.row.ac.sh(v-if="app.input.txt")
       textarea(v-model="msg" @keydown.enter="txt" id="txt" placeholder="Mensagem")
       button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
-    input.s.in(v-if="app.input.s" v-model="app.input.search" placeholder="Procurar" id="search")
-    Categoria.in.input.border.bw.sh(v-if="app.input.categoria" :z="app.input.categoria" :e="true") 
-    Produto.in.input.border.bw.sh(v-if="app.input.produto" :z="app.input.produto" :e="true")
-    Select.in.input.sh.border.bw(v-if="app.input.select")
-    Pedido.in.input.border.bw.sh(v-if="app.input.pedido")
-    Cartao.in.input.border.bw.sh(v-if="app.input.cartao")
-    Cliente.in.input.border.bw.sh(v-if="app.input.cliente" :z="app.input.cliente" :e="true")
+    input.s(v-if="app.input.s" v-model="app.input.search" placeholder="Procurar" id="search")
+    Categoria.input.border.bw.sh(v-if="app.input.categoria" :z="app.input.categoria" :e="true") 
+    Produto.input.border.bw.sh(v-if="app.input.produto" :z="app.input.produto" :e="true")
+    Select.input.sh.border.bw(v-if="app.input.select")
+    Pedido.input.border.bw.sh(v-if="app.input.pedido")
+    Apedido.input.border.bw.sh(v-if="app.input.apedido" :z="app.input.apedido" :e="true")
+    Cartao.input.border.bw.sh(v-if="app.input.cartao")
+    Cliente.input.border.bw.sh(v-if="app.input.cliente" :z="app.input.cliente" :e="true")
   .probox.tc.fb
     a(href="https://probox.app" target="_blank") 
       i.fa.fa-lock

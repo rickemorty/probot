@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, provide, ref, onMounted } from 'vue'
+import { reactive, provide, ref } from 'vue'
 import Head from './Head.vue'
 import Chat from './Chat.vue'
 import Footer from './Footer.vue'
@@ -21,7 +21,7 @@ var ws = reactive({});
 var load = ref(true)
 var categorias = ref([])
 const send = (d) => ws.send(JSON.stringify({ id: app.value.id, client: app.value.client, ...d }))
-const opt = [{ e: 'pedidos', o: 'Pedidos' }, { e: 'ocliente', o: 'Clientes' }, { e: 'oproduto', o: "Produtos" }, { e: 'ocategoria', o: 'Categorias' }]
+const opt = [{ e: 'pedido', o: 'Pedidos' }, { e: 'ocliente', o: 'Clientes' }, { e: 'oproduto', o: "Produtos" }, { e: 'ocategoria', o: 'Categorias' }]
 const oi = () => update({ select: app.value.select })
 const update = (m) => {
   if (m.categorias) { categorias.value = m.categorias; return }
@@ -38,14 +38,14 @@ const update = (m) => {
       if (typeof m.m === 'string') m.m = [m.m]
       m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), i * 300))
     }
-    if (m.s) chat.value.push({ s: m.s })
+    if (m.s) chat.value.push(m)
     if (m.a) { app.value.a = true; m.select = opt }
     setTimeout(() => { app.value.input = m; app.value.talk = false }, (m.m ? m.m.length + 1 : 1) * 300)
 
   }, 400)
 }
 
-var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, out: false, down: () => { app.value.out = true; setTimeout(() => { app.value.input = {}; app.value.out = false }, 400) }, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { nome: "", cpf: "", endereco: [{ cep: '' }], fone: [''], produtos: [] }, })
+var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, out: false, ativar: (f={}) => { app.value.out = true; setTimeout(() => { app.value.input = f; app.value.out = false, roll() }, 400) }, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { nome: "", cpf: "", endereco: [{ cep: '' }], fone: [''], produtos: [] }, })
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
   ws.onclose = () => setTimeout(WS(), Math.floor(3000 + Math.random() * 7000))
@@ -69,9 +69,13 @@ const login = () => update({
     cb: (s) => send({ e: 'login', m: { email: e, senha: s } })
   })
 });
-const admin = () => app.value.input = { select: opt }
+const roll = () => {
+  let ct = document.querySelector('#lilo .Chat')
+  if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 1000, 800)
+}
+const admin = () => {app.value.input = { select: opt };roll()}
 const pagamento = () => { update({ m: 'Legal, vou gerar os dados de pagamento, um instante...' });send({ e: 'pedido', pedido: app.value.pedido }) }
-provide('shopbot', { app, send, chat, update, categorias: categorias, admin, login, pagamento: pagamento, oi: oi })
+provide('lilo', { app, send, roll, chat, update, categorias, admin, login, pagamento: pagamento, oi })
 WS()
 
 async function initPush() {
@@ -110,7 +114,7 @@ $r: #fd6363
 body
   margin: 0
   height: 100vh
-#shopbot  
+#lilo  
   font-family: 'Roboto', sans-serif
   color: #333
   background: #eee  
@@ -166,6 +170,10 @@ body
     cursor: pointer
   .cb
     color: #23a6d5
+  .ca
+    color: #00f0ff
+  .c6
+    color: #666
   .cg
     color: #00FF7F
   .cp
@@ -174,6 +182,10 @@ body
     color: #fd5755
   .bw
     background: white
+  .bg
+    background: #00FF7F
+  .hcr:hover
+    color: #fd5755
   .sacola
     background-image: url(https://probox.app/shopbot/img/sacola.svg)
     background-size: 100% 100%
@@ -187,6 +199,7 @@ body
     overflow: hidden       
     animation: lgrow .5s
     border: 1px solid #ccc
+    animation: in .4s
     .campo
       margin-bottom: 20px
       padding: 2px 16px
@@ -201,9 +214,10 @@ body
       border-bottom: 2px solid #ccc
       &:focus
         background: rgba($gr,.2)
-        border-bottom: 1px solid $gr         
+        border: 2px solid $gr
+        border-radius: 6px
       &:hover
-        border-bottom: 2px solid var(--main)
+        border-bottom: 2px solid $gr
     .qtd
       color: ciano
       &:hover
@@ -234,7 +248,6 @@ body
     padding: 0
     padding-bottom: 10px
     margin-bottom: 10px
-    /* border-left: 2px solid #ccc */
     border-bottom: 4px solid #ccc
     &:hover
         border-left: 2px solid var(--main)
@@ -249,7 +262,11 @@ body
     .preco, qtd
         font-size: 22px
   button:hover
-      background: $gr
+    background: $gr
+  .add
+    border: none
+    padding: 6px 8px
+    border-radius: 4px
   label
       font-weight: bold
       font-size: 12px
@@ -301,7 +318,7 @@ body
     animation: out .4s
   @keyframes in 
     0%
-        margin-bottom: -500px
+        margin-bottom: -700px
     100%
         margin-bottom: 0px
   @keyframes out

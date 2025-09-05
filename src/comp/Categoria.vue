@@ -3,7 +3,7 @@ let { e, c } = defineProps(['e', 'c'])
 import Chave from './Chave.vue'
 import Foto from './Foto.vue'
 import { inject, reactive, ref } from 'vue'
-var { app, send, chat } = inject('shopbot')
+var { app, send, chat } = inject('lilo')
 var categoria = reactive(c)
 
 function fechar() {

@@ -1,12 +1,12 @@
 <script setup>
 import { inject, ref } from 'vue'
-var { app, pagamento, update } = inject('shopbot')
+var { app, pagamento, update } = inject('lilo')
 import Titulo from './Titulo.vue'
 </script>
 
 <template lang="pug">
 .Cartao
-  Titulo(:z="{n:'CARTÃO DE CRÉDITO',fechar:()=>{update(app.forma); app.down()}}")
+  Titulo(:z="{n:'CARTÃO DE CRÉDITO',fechar:()=>{update(app.forma); app.ativar()}}")
   .campo.col
     label NOME 
     input(v-model="app.pedido.cartao.nome" placeholder="Igual ao do cartão.")
@@ -22,7 +22,7 @@ import Titulo from './Titulo.vue'
     .col(style="width: 120px")
       label CCV
       input(v-model="app.pedido.cartao.ccv" type="number" maxlength="3" placeholder="000")
-  button.fechar(v-if="app.pedido.cartao.n && app.pedido.cartao.nome && app.pedido.cartao.ccv && app.pedido.cartao.mes && app.pedido.cartao.ano" @click="app.down();app.pedido.forma='cartao';pagamento()")
+  button.fechar(v-if="app.pedido.cartao.n && app.pedido.cartao.nome && app.pedido.cartao.ccv && app.pedido.cartao.mes && app.pedido.cartao.ano" @click="app.ativar();app.pedido.forma='cartao';pagamento()")
     i.fa.fa-circle-down
     | CONTINUAR
 </template>

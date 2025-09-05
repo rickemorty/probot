@@ -1,7 +1,7 @@
 <script setup>
-import Titulo from './Titulo.vue'
 import { inject, ref } from 'vue'
-var { app, chat, send, oi, pagamento, login } = inject('shopbot')
+var { app, chat, send, oi, pagamento, login } = inject('lilo')
+import Titulo from './Titulo.vue'
 var titulo = ref((app.input && app.input.n) || 'Selecione')
 const categoria = { nome: "", foto: [], desc: "", ativo: true }
 const produto = { categoria: "", nome: "", foto: [], desc: "", preco: "", qtd: 1, ativo: true }
@@ -10,13 +10,14 @@ const cliente = { cpf: "", nome: "", email: "", fone: [''], endereco: [{ cep: ''
 const mid = { //{ e, o, v }
   oi: oi,
   login: login,
-  ocategoria: () => setTimeout(() => app.value.input = { n: 'CATEGORIA', select: [{ e: 'categoria', o: 'Nova' }, { e: 'categorias', o: 'Editar' }] }, 300),
-  oproduto: () => setTimeout(() => app.value.input = { n: 'PRODUTO', select: [{ e: 'produto', o: 'Novo' }, { e: 'categorias', v: 'p', o: 'Editar' }] }, 300),
-  ocliente: () => setTimeout(() => app.value.input = { n: 'CLIENTE', select: [{ e: 'cliente', o: 'Novo' }, { e: 'clientes', o: 'Editar' }] }, 300),
+  ocategoria: () => app.value.input = { n: 'CATEGORIA', select: [{ e: 'categoria', o: 'Nova' }, { e: 'categorias', o: 'Editar' }] },
+  oproduto: () => app.value.input = { n: 'PRODUTO', select: [{ e: 'produto', o: 'Novo' }, { e: 'categorias', v: 'p', o: 'Editar' }] },
+  ocliente: () => app.value.input = { n: 'CLIENTE', select: [{ e: 'cliente', o: 'Novo' }, { e: 'clientes', o: 'Editar' }] },
   categoria: ({ v }) => app.value.input = { categoria: v || categoria },
   produto: ({ v }) => app.value.input = { produto: v || produto },
   cliente: ({ v }) => app.value.input = { cliente: v || cliente },
   txt: (m) => app.value.input = { txt: true, cb: (m) => send({ e: 'ia', m: m }) },
+  pedido: () => app.value.input = { n: 'pedido', select: [{ e: 'pedidos', v: 'novo', o: 'Novos' }, { e: 'pedidos', v: 'entregue', o: 'Entregue' }] },
   concluir: () => app.value.input = { pedido: true },
   forma: () => app.value.forma,
   pix: () => { app.value.pedido.forma = 'PIX'; pagamento() },
@@ -25,10 +26,10 @@ const mid = { //{ e, o, v }
 }
 
 function option(m) {
-  app.value.down()
+  app.value.ativar()
   chat.value.push({ user: app.value.client, m: m.o })
   if (m.e) {
-    if (mid[m.e]) mid[m.e](m)
+    if (mid[m.e]) setTimeout(() => mid[m.e](m), 400)
     else send({ e: m.e, o: m.v || m.o })
   }
 
@@ -39,6 +40,7 @@ function option(m) {
 .Select
   Titulo(:z="{n:'Selecione'}")
   .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
+  .o.pt.fb(@click="app.ativar({txt:true})") Lilo
 </template>
 
 <style lang="sass" scoped>

@@ -4,7 +4,7 @@ import Chave from './Chave.vue'
 import Foto from './Foto.vue'
 import Titulo from './Titulo.vue'
 import { inject, reactive } from 'vue'
-var { app, send, chat, admin, categorias, oi } = inject('shopbot')
+var { app, send, chat, admin, categorias, oi } = inject('lilo')
 send({ e: 'categorias', l: true })
 var produto = reactive(z)
 if (!app.value.a) {
@@ -15,7 +15,7 @@ if (!app.value.a) {
 }
 const abrir = () => { if (!e) { app.value.input = { produto: produto } } }
 function fechar() {
-  app.value.down()
+  app.value.ativar()
   if (app.value.a) {
     if (produto.nome) {
       send({ e: 'up', p: produto })
@@ -43,7 +43,7 @@ function del() {
 
 <template lang="pug">
 .Produto(@click="abrir" :class="`${e ?'sh': 'fechado pt'}`")
-  Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false}")
+  Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false,fechar:!z._id?admin:false}")
   .campo.col(v-if="e && app.a")
     label CATEGORIA
     select.pt(v-model="produto.categoria")
@@ -66,6 +66,7 @@ function del() {
   .campo.col(v-if="e && app.a")
     label PREÇO (R$)
     input(v-mask="'preco'" v-model="produto.preco" placeholder="0,00")
+  
   div(:class="`${e ? 'row ac ja': 'col'}`")
     .campo.col.ac(v-if="e || app.pedido.produtos.filter(p=>p._id==produto._id).length" :class="!e && 'ac'")
       label QUANTIDADE
@@ -77,9 +78,7 @@ function del() {
     .preco.fb.tc(v-if="!e")
       span R$ 
       | {{produto.preco}}
-  .campo.col(v-if="e && app.a")
-    label ATIVO
-    Chave(:t="{on: produto.ativo, cb:()=>produto.ativo=!produto.ativo}")
+  
   button.fechar(v-if="e" @click="fechar") 
     i.fa.fa-circle-down
     | FECHAR

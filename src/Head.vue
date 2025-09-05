@@ -1,6 +1,6 @@
 <script setup>
 import { inject } from 'vue'
-var { app, chat, update } = inject('shopbot')
+var { app, chat, update } = inject('lilo')
 const sacola = () => {
   let n = app.value.pedido.produtos.length
   if (!n) chat.value.push({ m: "Seu pedido não possui <b>nenhum produto.</b>" })
@@ -29,9 +29,10 @@ const sacola = () => {
 .Head
 	padding: 7px 10px
 	padding-right: 16px
-	box-shadow: 0 0 10px #999
+	box-shadow: 0 0 10px #999, inset 1px 0 50px rgba(black,.3)
 	height: 56px
 	background: var(--main)
+	filter: contrast(120%)
 	&.talk
 		background: linear-gradient(-45deg, #8D00FC, #ee7752, #23a6d5, #23d5ab)
 		background-size: 400% 400%

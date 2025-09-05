@@ -1,7 +1,6 @@
 <script setup>
 let { z } = defineProps(['z'])
 import {cpf} from '../canivet'
-z.cpf = cpf(z.cpf) 
 import { ref } from 'vue'
 var icpf = ref(false)
 
@@ -34,8 +33,8 @@ function valida() {
 </script>
 
 <template lang="pug">
-.CPF
+.CPF.col
   label CPF
-  input(v-model="z.cpf" @input="valida" v-mask="'cpf'" placeholder="CPF")
+  input(v-model="z.cpf" @input="valida" v-mask="'cpf'" placeholder="CPF" style="width:100px")
   b.cr(v-if="icpf" style="margin: 8px 12px;font-size:13px") CPF INVÁLIDO
 </template>

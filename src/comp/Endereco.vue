@@ -1,8 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { cep } from '../canivet'
-let { z } = defineProps(['z'])
-z.cep = cep(z.cep)
+let { z,del,r } = defineProps(['z','del','r'])
 var invalid = ref(false)
 
 async function valid() {
@@ -33,28 +31,36 @@ async function valid() {
 
 <template lang="pug">
 .Endereco
-  .row.ac
-    .col.cep
-      label CEP
-      input(v-model="z.cep" @input="valid()" v-mask="'cep'" placeholder="CEP")
-    .fb.cr(v-if="invalid" style="margin-left: 12px") CEP não encontrado.
+  .row.js
+    .row.ac
+      .col.cep
+        label CEP
+        input(v-if="!r" v-model="z.cep" @input="valid()" v-mask="'cep'" placeholder="CEP")
+        b(v-if="r") {{ z.cep }} 
+      .fb.cr(v-if="invalid" style="margin-left: 22px") CEP não encontrado.
+    i.fa.fa-trash.c6.hcr.pt(v-if="del && !r" @click="del" title="EXCLUIR")
   .col(v-if="z.logradouro")
-    label.cp ENDEREÇO
+    label.cp( style="margin-top:6px") ENDEREÇO
     b {{z.logradouro}} - {{z.bairro}} - {{z.cidade}}/{{z.uf}}
   .row.fb(v-if="z.logradouro" style="margin-top:10px")
     .col(style="width:30%")
       label.cp NÚMERO
-      input(type="number" v-model="z.n" placeholder="N°")
-    .col(style="width:70%")
+      input(v-if="!r" type="number" v-model="z.n" placeholder="N°")
+      b(v-else) {{z.n}}
+    .col(v-if="z.comp" style="width:70%")
       label.cp COMPLEMENTO
-      input(v-model="z.comp" placeholder="Comp.")
+      input(v-if="!r" v-model="z.comp" placeholder="Comp.")
+      b(v-else) {{z.comp}}
 </template>
 
 <style lang="sass" scoped>
 .Endereco
-	input
-		margin-bottom: 12px
-		width: 90%
-	.cep
-		width: 110px    
+  padding: 14px 20px
+  border-radius: 8px
+  background: #f1f1f1
+  input
+    margin-bottom: 12px
+    width: 90%
+  .cep
+    width: 110px
 </style>

@@ -1,10 +1,10 @@
 <script setup>
 import { inject } from 'vue'
-var { app, send, oi } = inject('shopbot')
+var { app, send, oi } = inject('lilo')
 import Titulo from './Titulo.vue'
 import Cliente from './Cliente.vue'
 const fechar = () => {
-  app.value.down()
+  app.value.ativar()
   send({ e: 'cliente', pagamento: true, m: app.value.pedido });
 }
 </script>
