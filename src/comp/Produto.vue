@@ -24,11 +24,7 @@ function fechar() {
     } else { admin(); return }
   } else {
     app.value.pedido.produtos = app.value.pedido.produtos.filter(p => p._id != produto._id)
-    if (produto.qtd > 0) {
-      app.value.pedido.produtos.push(produto)
-      if (produto.qtd == 1)
-        chat.value.push({ m: 'Quando quiser finalizar o pedido, basta clicar no botão <b>CONCLUIR</b>.' })
-    }
+    if (produto.qtd > 0) app.value.pedido.produtos.push(produto)
   }
 
   oi()
@@ -43,7 +39,9 @@ function del() {
 
 <template lang="pug">
 .Produto(@click="abrir" :class="`${e ?'sh': 'fechado pt'}`")
-  Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false,fechar:!z._id?admin:false}")
+  Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false,fechar:z._id?admin:oi}")
+  .row.je(v-if="app.a && e" style="padding:5px 22px")
+    i.fa.fa-trash.pt(@click="del" title="EXCLUIR")
   .campo.col(v-if="e && app.a")
     label CATEGORIA
     select.pt(v-model="produto.categoria")
@@ -52,7 +50,7 @@ function del() {
   .campo.col(:class="e && app.a && 'campo'")
     label(v-if="e && app.a") FOTO
     Foto(v-if="e && app.a" :cb="(v)=>produto.foto=v" :f="produto.foto")
-    .foto(v-if="!app.a && produto.foto.length" :style="`background-image: url(${produto.foto[0].src || ''})`")
+    .foto(v-if="produto.foto && produto.foto.length && (app.a && !e)" :style="`background-image: url(${produto.foto[0].src || ''})`")
   .campo.col
     label(v-if="e && app.a") NOME
     input(v-if="e && app.a" v-model="produto.nome" placeholder="Nome do produto.")
@@ -75,13 +73,10 @@ function del() {
         input.qtd(v-model="produto.qtd" type="number" min="0" placeholder="Quantidade.")
         button.fa.fa-plus(@click="produto.qtd++")
       .qtd.tc.fb(v-if="!e && !app.a") {{produto.qtd}}
-    .preco.fb.tc(v-if="!e")
+    .preco.fb.tc(v-if="!app.a")
       span R$ 
       | {{produto.preco}}
-  
-  button.fechar(v-if="e" @click="fechar") 
-    i.fa.fa-circle-down
-    | FECHAR
+  button.fechar(v-if="e" @click="fechar") SALVAR
 </template>
 
 <style lang="sass" scoped>

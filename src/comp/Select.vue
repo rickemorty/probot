@@ -1,6 +1,6 @@
 <script setup>
 import { inject, ref } from 'vue'
-var { app, chat, send, oi, pagamento, login } = inject('lilo')
+var { app, chat, send, oi, pagamento, login,sacola } = inject('lilo')
 import Titulo from './Titulo.vue'
 var titulo = ref((app.input && app.input.n) || 'Selecione')
 const categoria = { nome: "", foto: [], desc: "", ativo: true }
@@ -40,7 +40,8 @@ function option(m) {
 .Select
   Titulo(:z="{n:'Selecione'}")
   .o.pt.fb(v-for="o in app.input.select" @click="option(o)") {{o.o}}
-  .o.pt.fb(@click="app.ativar({txt:true})") Lilo
+  .o.pt.fb(v-if="app.pedido.produtos.length" @click="sacola") Finalizar Compra
+  .o.pt.fb(@click="app.ativar({txt:true})") Dúvidas
 </template>
 
 <style lang="sass" scoped>

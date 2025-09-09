@@ -36,16 +36,16 @@ const update = (m) => {
   setTimeout(() => {
     if (m.m) {
       if (typeof m.m === 'string') m.m = [m.m]
-      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), i * 300))
+      m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), (i + 1) * 300))
     }
-    if (m.s) chat.value.push(m)
+    if (m.s) chat.value.push({ s: m.s })
     if (m.a) { app.value.a = true; m.select = opt }
-    setTimeout(() => { app.value.input = m; app.value.talk = false }, (m.m ? m.m.length + 1 : 1) * 300)
+    setTimeout(() => { app.value.input = m; app.value.talk = false; roll() }, (m.m ? m.m.length + 1 : 1) * 300)
 
   }, 400)
 }
 
-var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, out: false, ativar: (f={}) => { app.value.out = true; setTimeout(() => { app.value.input = f; app.value.out = false, roll() }, 400) }, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { nome: "", cpf: "", endereco: [{ cep: '' }], fone: [''], produtos: [] }, })
+var app = ref({ id: ID, client: CLIENT, step: 0, input: {}, out: false, ativar: (f = {}) => { app.value.out = true; setTimeout(() => { app.value.input = f; app.value.out = false, roll() }, 400) }, talk: false, nome: 'Probox', avatar: "https://probox.app/img/logow.svg", pedido: { nome: "", cpf: "", endereco: [{ cep: '' }], fone: [''], produtos: [] }, })
 function WS() {
   ws = new WebSocket('ws://localhost:3000')
   ws.onclose = () => setTimeout(WS(), Math.floor(3000 + Math.random() * 7000))
@@ -73,9 +73,18 @@ const roll = () => {
   let ct = document.querySelector('#lilo .Chat')
   if (ct) setTimeout(() => ct.scrollTop = ct.scrollHeight + 1000, 800)
 }
-const admin = () => {app.value.input = { select: opt };roll()}
-const pagamento = () => { update({ m: 'Legal, vou gerar os dados de pagamento, um instante...' });send({ e: 'pedido', pedido: app.value.pedido }) }
-provide('lilo', { app, send, roll, chat, update, categorias, admin, login, pagamento: pagamento, oi })
+const admin = () => { app.value.input = { select: opt }; roll() }
+const pagamento = () => { update({ m: 'Legal, vou gerar os dados de pagamento, um instante...' }); send({ e: 'pedido', pedido: app.value.pedido }) }
+const sacola = () => {
+  let n = app.value.pedido.produtos.length
+  if (!n) chat.value.push({ m: "Seu pedido não possui <b>nenhum produto.</b>" })
+  else {
+    chat.value.push({ m: "<b>O seu pedido possui:</b>" })
+    update({ s: app.value.pedido.produtos })
+    update({ pedido: true })
+  }
+}
+provide('lilo', { app, send, roll, chat, update, categorias, admin, login, pagamento, oi, sacola })
 WS()
 
 async function initPush() {
@@ -238,7 +247,7 @@ body
     width: 100%
     border: none
     padding: 15px 10px
-    font-size: 15px
+    font-size: 16px
     margin-top: 10px
     i
       margin-right: 5px

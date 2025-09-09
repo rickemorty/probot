@@ -1,15 +1,13 @@
 <script setup>
 let { z } = defineProps(['z'])
 import { inject } from 'vue'
-var { app } = inject('lilo')
+var { app,roll } = inject('lilo')
+roll()
 </script>
 
 <template lang="pug">
 .Titulo.row.js.ac {{z.n}}
-  .row.ac
-    i.fa.fa-trash.pt(v-if="z.del" @click="z.del" title="EXCLUIR" style="margin-right: 16px")
-    i.fa.fa-times.pt(@click="z.fechar" title="FECHAR")
-    //.ia.pt(@click="app.ativar({txt:true})" title="Falar com a Lilo.") IA
+  i.fa.fa-times.pt(v-if="z.fechar" @click="z.fechar" title="FECHAR")
 </template>
 
 <style lang="sass" scoped>
@@ -23,6 +21,8 @@ var { app } = inject('lilo')
   text-transform: uppercase
   font-weight: bold
   opacity: .7
+  box-shadow: inset 1px 0 50px rgba(black,.3)
+  filter: contrast(120%)
   .ia
     background: #eee
     color: var(--main)

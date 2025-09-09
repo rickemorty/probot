@@ -26,7 +26,9 @@ function del() {
 
 <template lang="pug">
 .Cliente.border.bw(@click="r?false:abrir" :class="`${!e && 'pt'}`")
-  Titulo(v-if="e && app.a" :z="{n:'cliente',del:z._id?del:false,fechar:!z._id?admin:false}")
+  Titulo(v-if="e && app.a" :z="{n:'cliente',fechar:!z._id?admin:false}")
+  .row.je(v-if="app.a && e" style="padding:5px 22px")
+    i.fa.fa-trash.pt(@click="del" title="EXCLUIR")
   .campo.col
     label NOME
     input(v-if="e && !r" v-model="cliente.nome" placeholder="Nome")
@@ -39,7 +41,7 @@ function del() {
     .row.ac
       label FONE
       button.add.fa.fa-plus(v-if="e && app.a" @click="cliente.fone.unshift('')" title="ADICIONAR ENDEREÇO")
-    .row.wp(style="margin-top:10px")
+    .row.wp
       .row.ac(v-if="app.a && e" v-for="f,i in cliente.fone" style="margin-right:25px;")
         input(v-mask="'fone'" v-model="cliente.fone[i]" placeholder="Fone" style="width:125px")
         i.fa.fa-trash.pt.hcr.c6(@click="cliente.fone.splice(i,1)" style="margin-left: -25px;")

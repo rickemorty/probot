@@ -7,7 +7,7 @@ import Cartao from './comp/Cartao.vue'
 import Cliente from './comp/Cliente.vue'
 import Select from './comp/Select.vue'
 import { inject, ref, onUpdated } from 'vue'
-var { app, chat, send, login } = inject('lilo')
+var { app, chat, send, login, admin, oi } = inject('lilo')
 var msg = ref("")
 onUpdated(() => {
   let e = false
@@ -42,7 +42,9 @@ function txt(e) {
     .txt.in.row.ac.sh(v-if="app.input.txt")
       textarea(v-model="msg" @keydown.enter="txt" id="txt" placeholder="Mensagem")
       button.send.fa.fa-paper-plane(@click="txt" title="ENVIAR")
-    input.s(v-if="app.input.s" v-model="app.input.search" placeholder="Procurar" id="search")
+    .pesquisa.row.ac.js(v-if="app.input.s")
+      input.s(v-model="app.input.search" placeholder="Procurar" id="search")
+      button.fb(@click="()=>app.a?admin():oi()" title="FECHAR") x
     Categoria.input.border.bw.sh(v-if="app.input.categoria" :z="app.input.categoria" :e="true") 
     Produto.input.border.bw.sh(v-if="app.input.produto" :z="app.input.produto" :e="true")
     Select.input.sh.border.bw(v-if="app.input.select")
@@ -65,6 +67,19 @@ $p: #8d00fc
     margin-bottom: 44px
     position: relative
     z-index: 777
+  .pesquisa button
+    margin-left: 5px
+    height: 42px
+    padding: 0 10px
+    font-size: 22px
+    border: none
+    color: #fd6363
+    &:hover
+      font-size: 25px
+      background: #fd6363
+      color: white
+  .s
+    flex: 1
   .txt,.s
     background: white
     border-left: 3px solid #ccc

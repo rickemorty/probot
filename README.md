@@ -1,15 +1,14 @@
 # shopbot
-Depois que fecha venda, animação de purpurina confete, comemoraçao quando o cliente compra.
-preço produto
-fechar com x no canto, descer lixeira para dentro do componente.
-botao salvar no produto
-,fone no pedido sumindo
-admin (Pedido, lixeira)
+
+fone no pedido sumindo
+Pedido
 hostinger vps com coolify
 Integração assas, falta receber webhook pix para confirar pagamento.
 notificar pedido wzp
 fazer apresentação de categorias com fotos em lista.
+Depois que fecha venda, animação de purpurina confete, comemoraçao quando o cliente compra.
 cONTROLE  de estoque, Lilo te avisa quando está acabando.
+admin (, lixeira)
 
 # ARGUMENTOS
 

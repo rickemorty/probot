@@ -21,7 +21,6 @@ watch(chat.value, roll)
         Produto.m(v-if="z.preco" :z="z")
         Cliente.m(v-if="z.cpf" :z="z")
         Pedido.m(v-if="z.cliente" :z="z")
-
 </template>
 
 <style lang="sass" scoped>
