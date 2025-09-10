@@ -25,11 +25,11 @@ function del() {
 </script>
 
 <template lang="pug">
-.Cliente.border.bw(@click="r?false:abrir" :class="`${!e && 'pt'}`")
+.Cliente.border.bw(@click="r?false:abrir" :class="`${!e && 'pt'} ${r && 'row wp read'}`")
   Titulo(v-if="e && app.a" :z="{n:'cliente',fechar:!z._id?admin:false}")
   .row.je(v-if="app.a && e" style="padding:5px 22px")
     i.fa.fa-trash.pt(@click="del" title="EXCLUIR")
-  .campo.col
+  .campo.col(:style="r ?'margin-right:8px':''")
     label NOME
     input(v-if="e && !r" v-model="cliente.nome" placeholder="Nome")
     .nome.fb(v-if="!e || r") {{cliente.nome}}
@@ -42,10 +42,10 @@ function del() {
       label FONE
       button.add.fa.fa-plus(v-if="e && app.a" @click="cliente.fone.unshift('')" title="ADICIONAR ENDEREÇO")
     .row.wp
-      .row.ac(v-if="app.a && e" v-for="f,i in cliente.fone" style="margin-right:25px;")
+      .row.ac(v-for="f,i in cliente.fone" style="margin-right:25px;")
         input(v-mask="'fone'" v-model="cliente.fone[i]" placeholder="Fone" style="width:125px")
-        i.fa.fa-trash.pt.hcr.c6(@click="cliente.fone.splice(i,1)" style="margin-left: -25px;")
-      b(v-else) {{cliente.fone[0]}}
+        i.fa.fa-trash.pt.hcr.c6(v-if="app.a" @click="cliente.fone.splice(i,1)" style="margin-left: -25px;")
+      b(v-if="r") {{cliente.fone[0]}}
   .campo.col(v-if="e && cliente.email")
     label E-MAIL
     input(v-model="cliente.email" placeholder="E-mail")
@@ -64,13 +64,11 @@ function del() {
     .col.ac(v-if="cliente.atualizado")
       label ATUALIZADO
       b {{dh(cliente.atualizado)}}
-  button.fechar(v-if="app.a && e && cliente.cpf && cliente.nome" @click="fechar") 
-    i.fa.fa-circle-down
-    | FECHAR
+  button.fechar(v-if="app.a && e && cliente.cpf && cliente.nome" @click="fechar") SALVAR
 </template>
 
 <style lang="sass">
-.Cliente      
+.Cliente
   .campo
     margin-bottom: 12px
   .add

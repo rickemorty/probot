@@ -39,7 +39,7 @@ function del() {
 
 <template lang="pug">
 .Produto(@click="abrir" :class="`${e ?'sh': 'fechado pt'}`")
-  Titulo(v-if="e && app.a" :z="{n:'Produto', del:app.a && produto._id ?del:false,fechar:z._id?admin:oi}")
+  Titulo(v-if="e" :z="{n:'Produto', del:app.a && produto._id ?del:false,fechar:app.a?admin:oi}")
   .row.je(v-if="app.a && e" style="padding:5px 22px")
     i.fa.fa-trash.pt(@click="del" title="EXCLUIR")
   .campo.col(v-if="e && app.a")
@@ -50,7 +50,7 @@ function del() {
   .campo.col(:class="e && app.a && 'campo'")
     label(v-if="e && app.a") FOTO
     Foto(v-if="e && app.a" :cb="(v)=>produto.foto=v" :f="produto.foto")
-    .foto(v-if="produto.foto && produto.foto.length && (app.a && !e)" :style="`background-image: url(${produto.foto[0].src || ''})`")
+    .foto(v-if="produto.foto && produto.foto.length && !app.a" :style="`background-image: url(${produto.foto[0].src || ''})`")
   .campo.col
     label(v-if="e && app.a") NOME
     input(v-if="e && app.a" v-model="produto.nome" placeholder="Nome do produto.")

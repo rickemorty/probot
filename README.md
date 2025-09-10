@@ -1,7 +1,5 @@
 # shopbot
 
-fone no pedido sumindo
-Pedido
 hostinger vps com coolify
 Integração assas, falta receber webhook pix para confirar pagamento.
 notificar pedido wzp

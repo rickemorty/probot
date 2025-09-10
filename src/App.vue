@@ -38,7 +38,7 @@ const update = (m) => {
       if (typeof m.m === 'string') m.m = [m.m]
       m.m.map((msg, i) => setTimeout(() => (chat.value.push({ m: msg })), (i + 1) * 300))
     }
-    if (m.s) chat.value.push({ s: m.s })
+    if (m.s) chat.value.push({ n:m.n||'', s: m.s })
     if (m.a) { app.value.a = true; m.select = opt }
     setTimeout(() => { app.value.input = m; app.value.talk = false; roll() }, (m.m ? m.m.length + 1 : 1) * 300)
 

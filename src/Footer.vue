@@ -55,7 +55,7 @@ function txt(e) {
   .probox.tc.fb
     a(href="https://probox.app" target="_blank") 
       i.fa.fa-lock
-      |  AMBIENTE SEGURO - PROBOX
+      |  AMBIENTE SEGURO - LILO.IA.BR
 </template>
 
 <style lang="sass" scoped>
